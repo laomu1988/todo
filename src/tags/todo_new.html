@@ -1,0 +1,19 @@
+<todo_new>
+    <input type="text" placeholder="新任务" onkeyup="{insert}">
+    <script>
+        var self = this;
+        self.insert = function (e) {
+            console.log(e.keyCode);
+            if (e.keyCode == 13) {
+                var val = e.target.value;
+                web.services.todo.new({
+                    name: val
+                }, function (data) {
+                    if (data && data.code == 0) {
+                        alert('新任务：' + val);
+                    }
+                });
+            }
+        };
+    </script>
+</todo_new>

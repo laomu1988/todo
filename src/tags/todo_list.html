@@ -1,0 +1,20 @@
+<todo_list>
+    <style>
+
+    </style>
+    <div each="{opts.results}">
+        <input type="checkbox" value="" onclick="{finish}" todo_id={objectId}>{name}
+    </div>
+    <script>
+        var self = this;
+        console.log(self.opts);
+        self.finish = function (e) {
+            var id = e.target.getAttribute('todo_id');
+            web.services.todo.edit({id: id, finishDate: Date.now()}, function (data) {
+                if (data && data.code == 0) {
+                    alert('完成！');
+                }
+            });
+        }
+    </script>
+</todo_list>

@@ -14,7 +14,7 @@ function send(success, error) {
             if (typeof error == 'function') {
                 error(err, data);
             }
-            gl.res.json(err);
+            gl.res.json(err || data);
         }
     }
 }
@@ -43,6 +43,7 @@ var methods = {
         });
     },
     findById: function (className, objectId, success, error) {
+        console.log('findById', className, objectId, success, error);
         var query = new AV.Query(methods.class(className));
         query.get(objectId, {
             success: success,
@@ -88,6 +89,29 @@ var methods = {
             post.set(attr, data[attr]);
         }
         post.save(null, send());
+    },
+    /**查找对象，并根据条件函数返回结果确定是否修改值
+     * className: 类
+     * objectId： 对象id
+     * conditionFunc： 条件函数，假如返回true，则修改查询结果
+     * data： 要修改的值
+     * */
+    editCondition: function (className, objectId, conditionFunc, data) {
+        console.log('editCondition');
+        methods.findById(className, objectId, function (result) {
+            console.log('查询到结果：', JSON.stringify(result));
+            if (conditionFunc(result)) {
+                for (var attr in data) {
+                    result.set(attr, data[attr]);
+                }
+                result.save(null, send());
+            } else {
+                gl.res.json({code: 1, message: '没有权限进行该操作！'});
+            }
+        }, function (err) {
+            console.log('查询出错！');
+            gl.res.json(err);
+        });
     },
     extend: function () {
         var ret = {};
@@ -161,6 +185,19 @@ var methods = {
         }
     },
     todo: {
+        // 转换data类型到Todo
+        transfer: function (data) {
+            return methods.transferData(data, {
+                user: 'User',
+                name: 'string', //任务名称
+                detail: 'string', //任务详情
+                finishDate: 'date', //完成时间
+                startDate: 'date', //开始时间
+                project: 'Project', //所在项目
+                haschild: 'boolean',//是否包含子任务
+                removed: 'boolean'//是否删除
+            },false);
+        },
         new: function (req, res) {
             var data = req.data;
             var d = {
@@ -184,20 +221,47 @@ var methods = {
         edit: function (req, res) {
             var data = req.data;
             var id = data.id;
-            methods.findById('Todo', id, function (data) {
-                if (data) {
-                    // 确定是自己的Todo
-                    if (data.user && data.user.id == req.session.user.objectId) {
-
+            delete data.id;
+            delete data.user;
+            var data = methods.todo.transfer(data);
+            methods.editCondition('Todo', id, function (result) {
+                if (result) {
+                    var user = result.get('user');
+                    if (user.id == req.session.user.objectId) {
+                        return true;
                     }
                 }
-                res.json({code: 1, message: '不存在该内容！'});
-            }, function (err) {
-                res.json(err);
-            });
+                return false;
+            }, data);
         }
-    }
-    ,
+    },
+    /**转换数据类型*/
+    transferData: function (data, typeArray, keep) {
+        var d = {};
+        for (var attr in data) {
+            switch (typeArray[attr]) {
+                case 'date':
+                    d[attr] = new Date(data[attr]);
+                    break;
+                case 'bool':
+                case 'boolean':
+                    d[attr] = data[attr] + '' == 'true';
+                    break;
+                case 'string':
+                    d[attr] = data[attr] + '';
+                    break;
+                case 'Project':
+                case 'User':
+                    d[attr] = methods.withId(typeArray[attr], data[attr]);
+                    break;
+                default:
+                    if (keep !== false) {
+                        d[attr] = data[attr];
+                    }
+            }
+        }
+        return d;
+    },
     project: {
         new: function (req, res) {
             var data = req.data;
