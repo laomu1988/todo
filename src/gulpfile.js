@@ -8,8 +8,8 @@ var plugins = require('gulp-load-plugins')({
     replaceString: /\bgulp[\-.]/
 });
 var config = {
-    src: 'src/',
-    dest: 'public/',
+    src: './',
+    dest: '../public/',
     version: function () {
         return dateformat('yyyy-mm-dd-hh');
     }

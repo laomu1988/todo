@@ -22,7 +22,10 @@ function send(success, error) {
 var gl = {
     req: null,
     res: null,
-    next: null
+    next: null,
+    nowStr: function () {
+        return (new Date()).toISOString();
+    }
 };
 
 
@@ -55,7 +58,6 @@ var methods = {
             return classes[className] = AV.Object.extend(className);
         }
         return classes[className];
-
     },
     new: function (className, data) {
         if (!classes[className]) {
@@ -191,30 +193,39 @@ var methods = {
                 user: 'User',
                 name: 'string', //任务名称
                 detail: 'string', //任务详情
-                finishDate: 'date', //完成时间
-                startDate: 'date', //开始时间
+                finish: 'number', //完成时间
+                begin: 'number', //开始时间
                 project: 'Project', //所在项目
                 haschild: 'boolean',//是否包含子任务
                 removed: 'boolean'//是否删除
-            },false);
+            }, false);
         },
         new: function (req, res) {
             var data = req.data;
-            var d = {
-                name: data.name,
-                user: methods.user.myRef()
-            };
-            if (data.project) {
-                d.project = methods.withId('Project', d.project);
+            var d = methods.todo.transfer(data);
+            d.user = d.user ? d.user : methods.user.myRef();
+            d.begin = d.begin ? d.begin : Date.now();
+            if (d.Project) {
+
             }
-            methods.newAndSave('Todo', {
-                name: data.name,
-                user: methods.user.myRef()
-            });
+            methods.newAndSave('Todo', d);
         },
-        // todo列表
+        // todo列表 finished:bool,begin:number,finish:number,type: started,finished
         list: function (req, res) {
-            methods.findAndSend("select count(*),* from Todo where user = pointer('_User','" + req.session.user.objectId + "')");
+            var data = req.data;
+            var sql = "select count(*),* from Todo where user = pointer('_User','" + req.session.user.objectId + "')";
+            if (data.finished + '' == 'true') {
+                sql += ' and finish is exists and finish < ' + Date.now();
+            } else if (data.finished + '' == 'false') {
+                sql += ' and ( finish is not exists or finish > ' + gl.nowStr() + ')';
+            }
+            // 某一个时间节点之间的任务
+            if (data.begin && data.finish) {
+            }
+            else if (data.finish) {
+            }
+            // sql += ' order by updateAt desc';
+            methods.findAndSend(sql);
         }
         ,
         // 修改信息 id:'',   name: '',project:''
@@ -246,6 +257,9 @@ var methods = {
                 case 'bool':
                 case 'boolean':
                     d[attr] = data[attr] + '' == 'true';
+                    break;
+                case 'number':
+                    d[attr] = parseFloat(data[attr]);
                     break;
                 case 'string':
                     d[attr] = data[attr] + '';
