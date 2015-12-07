@@ -72,13 +72,13 @@ gulp.task('js', ['importjs'/*, 'requirejs', 'jsmin'*/]);
 
 
 gulp.task('scss', function () {
-    return gulp.src(config.src + 'css/*.scss')
+    return gulp.src(config.src + 'scss/*.scss')
         .pipe(plugins.sass().on('error', plugins.sass.logError))
         //.pipe(gulp.dest(config.src + 'css'))
         .pipe(gulp.dest(config.dest + 'css'))
 });
 
-gulp.task('cssmin', ['scss'], function () {
+gulp.task('cssmin', ['css'], function () {
     return gulp.src([config.dest + 'css/*.css', '!' + config.dest + 'css/*.min.css'])
         .pipe(plugins.minifyCss({keepBreaks: true}))
         .pipe(plugins.rename(function (path) {
