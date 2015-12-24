@@ -6,7 +6,7 @@ var plugins = require('gulp-load-plugins')({
     pattern: ['gulp-*', 'gulp.*'],
     replaceString: /\bgulp[\-.]/
 });
-console.log('test');
+
 var config = {
     src: './src/',
     dest: './public/',
