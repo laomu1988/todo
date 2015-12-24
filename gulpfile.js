@@ -15,6 +15,7 @@ var config = {
     }
 };
 
+
 gulp.task('riot', function () {
     console.log('riot');
     // common文件夹下的单独合并成一个文件
