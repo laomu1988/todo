@@ -1,0 +1,22 @@
+<dialog>
+    <!--弹窗-->
+    <div class="model" style="display: block;">
+        <div class="model-main">
+            <div class="close" onclick="{quit}"></div>
+            <div class="model-head" if="{opts.data.head}">{opts.data.head || opts.data.title}</div>
+            <div class="riot-tag"></div>
+        </div>
+    </div>
+    <script>
+        var self = this;
+        self.quit = function () {
+            $(self.root).hide();
+            self.unmount();
+        };
+        self.on('mount', function () {
+            //console.log(opts.data);
+            var tag = $(self.root).find('.riot-tag')[0];
+            (web.mount || riot.mount)(tag, opts.tag, opts.data);
+        });
+    </script>
+</dialog>

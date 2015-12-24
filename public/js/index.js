@@ -1,4 +1,5 @@
 $(function () {
+    riot.mount('header');
     web.services.login({username: 'laomu1988', password: '123456'}, function () {
         // web.services.todo.new({name: 'test'});
         riot.mount('.todo_new', 'todo_new');

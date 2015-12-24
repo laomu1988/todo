@@ -1,0 +1,44 @@
+<prompt>
+    <style>
+        .__self {
+            margin: 20px;
+        }
+
+        input {
+            height: 35px;
+            line-height: 35px;
+            margin-bottom: 20px;
+        }
+
+        .btns {
+            text-align: right;
+            padding-bottom: 20px;
+        }
+    </style>
+    <input type="text" value="{opts.input}">
+
+    <div class="btns">
+        <span class="button-inline main-bg" onclick="{callback}">确定</span>
+        <span class="button-inline gray-bg" onclick="{quit}">取消</span>
+    </div>
+    <script>
+        var self = this;
+        self.callback = function () {
+            if (typeof self.opts.callback == 'function') {
+                if (self.opts.callback($(self.root).find('input').val()) !== false) {
+                    self.quit();
+                }
+            }
+            else {
+                self.quit();
+            }
+        };
+        self.quit = function () {
+            if (typeof self.opts.quit == 'function') {
+                self.opts.quit();
+            }
+            $(self.root).parents('[riot-tag=dialog]').remove();
+            self.unmount();
+        };
+    </script>
+</prompt>

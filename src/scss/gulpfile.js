@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 var gulp = require('gulp');
 var dateformat = require('dateformat');
@@ -8,8 +7,8 @@ var plugins = require('gulp-load-plugins')({
     replaceString: /\bgulp[\-.]/
 });
 var config = {
-    src: './',
-    dest: '../public/',
+    src: './src',
+    dest: './public/',
     version: function () {
         return dateformat('yyyy-mm-dd-hh');
     }
