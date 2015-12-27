@@ -1,3 +1,10 @@
 header{font-size:16px;line-height:40px;height:40px;padding:0 10px;background:#000;color:#fff}
 header span{cursor:pointer;padding:0 10px}
 header span:hover{color:#d58512}
+.main-box{padding:0;overflow:hidden}
+.main-box>menu{width:80px;float:left;margin-right:-80px;padding:0}
+.main-box>menu ul{padding:0;margin:0;list-style:none}
+.main-box>menu ul li{list-style:none}
+.main-box>.main{margin-left:160px}
+.model_message{position:fixed;z-index:9999;color:#fff;top:200px;text-align:center}
+.model_message .message{width:auto;padding:20px 60px;background:rgba(0,0,0,.6);display:inline-block;border-radius:10px;font-size:20px}

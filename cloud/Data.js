@@ -283,9 +283,7 @@ var methods = {
                 name: data.name,
                 user: methods.user.myRef()
             });
-        }
-
-        ,
+        },
         // project列表
         list: function (req, res) {
             methods.findAndSend("select count(*),* from Project where user = pointer('_User','" + req.session.user.objectId + "')");

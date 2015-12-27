@@ -1,5 +1,7 @@
 var web = typeof web == 'undefined' ? {} : web;
 
+riot.observable(web);
+
 web.config = $.extend(web.config, {
     server: '/api/'
 });
@@ -574,7 +576,7 @@ web.formSubmit = function (form, config) {
         else if (config.services && web.services[config.services]) {
             web.services[config.services](data, function (result) {
                 console.log(result);
-                if (result && result.flag == 0) {
+                if (result && result.code == 0) {
                     if (config.callback) {
                         config.callback(result);
                     }
@@ -599,15 +601,45 @@ web.dialog = function (tag, data) {
     var dom = $('<div></div>').appendTo($('body'));
     return riot.mount(dom[0], 'dialog', {tag: tag, data: data});
 };
+
+
+web.alert = function (message) {
+    return web.mount('alert', {message: message})
+};
+
+web.message = function (message) {
+    var dom = $('<div class="model_message"><div class="message">' + message + '</div></div>').appendTo($('body'));
+    /*setTimeout(function () {
+        dom.fadeOut(function () {
+            dom.remove();
+        });
+    }, 1000);*/
+};
 web.prompt = function (data) {
     web.dialog('prompt', data);
 };
+
+web.isLogin = function () {
+    return !!web.getUser();
+};
+
+web.getUser = function () {
+    var user = web.getCookie('user', 'json');
+    if (user && user.username) {
+        return user;
+    }
+    return false;
+};
+
+
 
 web.mount = function (tag, data) {
     var dom = $('<div></div>').appendTo($('body'));
     return riot.mount(dom[0], tag, data);
 };
 
-web.message = function (message){
-    return web.mount('alert',{message: message})
-};
+$(function(){
+    riot.mount('header');
+    riot.mount('menu');
+
+});

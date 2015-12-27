@@ -1,0 +1,42 @@
+<menu>
+    <!--左侧菜单
+    新建
+    查看 今日待办，项目列表
+
+    状态：
+    已完成
+    已删除
+
+    -->
+    <div>新建</div>
+    <ul>
+        <li><i class="glyphicon glyphicon-plus"></i> 新任务</li>
+        <li><i class="glyphicon glyphicon-list-alt"></i> 新项目</li>
+    </ul>
+    <div>查看</div>
+    <ul>
+        <li><i class="glyphicon glyphicon-star"></i> 今日代办</li>
+        <li><i class="glyphicon glyphicon-list-alt"></i> 明日代办</li>
+        <li><i class="glyphicon glyphicon-calendar"></i> 日历</li>
+    </ul>
+    <div if="{projects && projects.length > 0}">项目</div>
+    <ul>
+        <li each="{projects}" projectId="{objectId}"><i class="glyphicon glyphicon-list"></i> {name}</li>
+    </ul>
+    <div>状态</div>
+    <ul>
+        <li><i class="glyphicon glyphicon-ok"></i> 已完成</li>
+        <li><i class="glyphicon glyphicon-trash"></i> 已删除</li>
+    </ul>
+    <script>
+        var self = this;
+        self.projects = [];
+        web.services.project.list(function (data) {
+            console.log(data);
+            if (data && data.data && data.data.results) {
+                self.projects = data.data.results;
+                self.update();
+            }
+        });
+    </script>
+</menu>

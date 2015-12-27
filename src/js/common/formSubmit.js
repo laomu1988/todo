@@ -39,7 +39,7 @@ web.formSubmit = function (form, config) {
         else if (config.services && web.services[config.services]) {
             web.services[config.services](data, function (result) {
                 console.log(result);
-                if (result && result.flag == 0) {
+                if (result && result.code == 0) {
                     if (config.callback) {
                         config.callback(result);
                     }

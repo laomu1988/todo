@@ -64,6 +64,6 @@ gulp.task('html', function () {
 gulp.task('default', ['js', 'css', 'html'], function () {
     console.log('default');
     gulp.watch([config.src + 'scss/*.scss'], ['css']);
-    gulp.watch([config.src + 'tags/*.html', config.src + 'js/*.js'], ['js']);
+    gulp.watch([config.src + 'tags/*.html', config.src + 'js/*/*.js', config.src + 'js/*.js'], ['js']);
     gulp.watch([config.src + '*.html'], ['html']);
 });

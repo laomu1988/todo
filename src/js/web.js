@@ -5,6 +5,8 @@ web.mount = function (tag, data) {
     return riot.mount(dom[0], tag, data);
 };
 
-web.message = function (message){
-    return web.mount('alert',{message: message})
-};
+$(function(){
+    riot.mount('header');
+    riot.mount('menu');
+
+});
