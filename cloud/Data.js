@@ -240,6 +240,7 @@ var methods = {
             delete data.id;
             delete data.user;
             var data = methods.todo.transfer(data);
+            var sql = 'update Todo set where id = ';
             // todo： 优化为update语句，只修改有权限的
             methods.editCondition('Todo', id, function (result) {
                 if (result) {

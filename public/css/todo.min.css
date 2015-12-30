@@ -6,5 +6,5 @@ header span:hover{color:#d58512}
 .main-box>menu ul{padding:0;margin:0;list-style:none}
 .main-box>menu ul li{list-style:none}
 .main-box>.main{margin-left:160px}
-.model_message{position:fixed;z-index:9999;color:#fff;top:200px;text-align:center}
+.model_message{position:fixed;z-index:9999;color:#fff;top:200px;text-align:center;width:100%}
 .model_message .message{width:auto;padding:20px 60px;background:rgba(0,0,0,.6);display:inline-block;border-radius:10px;font-size:20px}

@@ -33,7 +33,8 @@ header {
   z-index: 9999;
   color: #fff;
   top: 200px;
-  text-align: center; }
+  text-align: center;
+  width: 100%; }
   .model_message .message {
     width: auto;
     padding: 20px 60px;

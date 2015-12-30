@@ -1,12 +1,26 @@
 $(function () {
-    if (web.isLogin) {
-        riot.mount('todo_new');
-        web.services.todo.list(function (result) {
-            if (result && result.code == 0) {
-                riot.mount('todo_list', result.data);
-            }
-        });
-    }
+    riot.route(function () {
+        var method = web._hashs.method;
+        switch (method) {
+            case 'project':
+                riot.mount('todo_new');
+                web.services.todo.list({project: web._hashs.project}, function (result) {
+                    if (result && result.code == 0) {
+                        riot.mount('todo_list', result.data);
+                    }
+                });
+                break;
+            case 'todo':
+                riot.mount('todo_new');
+                web.services.todo.list(function (result) {
+                    if (result && result.code == 0) {
+                        riot.mount('todo_list', result.data);
+                    }
+                });
+                break;
+        }
+
+    });
 
     /*riot.mount('header');
      web.services.login({username: 'laomu1988', password: '123456'}, function () {

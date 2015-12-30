@@ -613,11 +613,11 @@ web.alert = function (message) {
 
 web.message = function (message) {
     var dom = $('<div class="model_message"><div class="message">' + message + '</div></div>').appendTo($('body'));
-    /*setTimeout(function () {
+    setTimeout(function () {
         dom.fadeOut(function () {
             dom.remove();
         });
-    }, 1000);*/
+    }, 1000);
 };
 web.prompt = function (data) {
     web.dialog('prompt', data);
@@ -635,6 +635,17 @@ web.getUser = function () {
     return false;
 };
 
+web.params = function (url) {
+    var array = url.split('&'), output = {};
+    for (var i = 0; i < array.length; i++) {
+        var keys = array[i].split('=');
+        var key = keys[0] ? (keys[0] + '').trim() : '';
+        if (key) {
+            output[key] = keys[1] ? (keys[1] + '').trim() : '';
+        }
+    }
+    return output;
+};
 
 
 web.mount = function (tag, data) {
@@ -642,7 +653,12 @@ web.mount = function (tag, data) {
     return riot.mount(dom[0], tag, data);
 };
 
-$(function(){
+riot.route.parser(function () {
+    web._hashs = web.params(location.hash.substr(1));
+    return [web._hashs];
+});
+
+$(function () {
     riot.mount('header');
     riot.mount('menu');
 

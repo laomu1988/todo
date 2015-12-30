@@ -70,7 +70,7 @@ riot.tag('login', '<div class="modal"> <div class="modal-dialog"> <div class="mo
         })
     
 });
-riot.tag('menu', ' <div>新建</div> <ul> <li><i class="glyphicon glyphicon-plus"></i> 新任务</li> <li><i class="glyphicon glyphicon-list-alt"></i> 新项目</li> </ul> <div>查看</div> <ul> <li><i class="glyphicon glyphicon-star"></i> 今日代办</li> <li><i class="glyphicon glyphicon-list-alt"></i> 明日代办</li> <li><i class="glyphicon glyphicon-calendar"></i> 日历</li> </ul> <div if="{projects && projects.length > 0}">项目</div> <ul> <li each="{projects}" projectid="{objectId}"><i class="glyphicon glyphicon-list"></i> {name}</li> </ul> <div>状态</div> <ul> <li><i class="glyphicon glyphicon-ok"></i> 已完成</li> <li><i class="glyphicon glyphicon-trash"></i> 已删除</li> </ul>', function(opts) {
+riot.tag('menu', ' <div>新建</div> <ul> <li> <a href="#method=new&type=todo"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li> <li> <a href="#method=new&type=project"><i class="glyphicon glyphicon-list-alt"></i> </a> </li> </ul> <div>查看</div> <ul> <li> <a href="#method=todo"><i class="glyphicon glyphicon-star"></i> 今日代办</a></li> <li><i class="glyphicon glyphicon-calendar"></i> 日历</li> </ul> <div if="{projects && projects.length > 0}">项目</div> <ul> <li each="{projects}"> <a href="#method=project&project={objectId}"><i class="glyphicon glyphicon-list"></i> {name}</a></li> </ul> <div>状态</div> <ul> <li> <a href="#method=finished"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li> <li> <a href="#method=delete"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li> </ul>', function(opts) {
         var self = this;
         self.projects = [];
         web.services.project.list(function (data) {

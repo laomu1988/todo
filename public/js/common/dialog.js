@@ -10,9 +10,9 @@ web.alert = function (message) {
 
 web.message = function (message) {
     var dom = $('<div class="model_message"><div class="message">' + message + '</div></div>').appendTo($('body'));
-    /*setTimeout(function () {
+    setTimeout(function () {
         dom.fadeOut(function () {
             dom.remove();
         });
-    }, 1000);*/
+    }, 1000);
 };

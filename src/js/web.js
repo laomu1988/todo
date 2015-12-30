@@ -5,7 +5,12 @@ web.mount = function (tag, data) {
     return riot.mount(dom[0], tag, data);
 };
 
-$(function(){
+riot.route.parser(function () {
+    web._hashs = web.params(location.hash.substr(1));
+    return [web._hashs];
+});
+
+$(function () {
     riot.mount('header');
     riot.mount('menu');
 

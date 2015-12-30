@@ -1,7 +1,6 @@
 // Use AV.Cloud.define to define as many cloud functions as you want.
 // For example:
-var Data = require('cloud/Data.js');
-var gl = Data.gl;
+var Data = require('cloud/gl.js');
 // 在 Cloud code 里初始化 Express 框架
 var express = require('express');
 var app = express();
