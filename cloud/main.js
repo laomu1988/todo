@@ -21,9 +21,6 @@ var routes = [
     {url: '/api/project/list', handles: [Data.right.needLogin, Data.project.list]}
 ];
 function before(req, res, next) {
-    gl.req = req;
-    gl.next = next;
-    gl.res = res;
     req.data = req.method == 'GET' ? req.query : req.body;
     delete req.data.__proto__;
     console.log(req.data);

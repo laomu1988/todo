@@ -33,6 +33,7 @@
                 callback: function (data) {
                     if (data && data.code == 0 && data.data.username) {
                         web.setCookie('user', data.data);
+                        $(self.root).find('.modal').modal('hide');
                         self.unmount();
                         web.trigger('update');
                     }

@@ -1,20 +1,20 @@
 /**将AV对象包裹在此*/
 var classes = {};
 
-function send(success, error) {
+function send(success, error, res) {
     return {
         success: function (data) {
             console.log('发送数据')
             if (typeof success == 'function') {
                 success(data);
             }
-            gl.res.json({code: 0, data: data});
+            res.json({code: 0, data: data});
         },
         error: function (data, err) {
             if (typeof error == 'function') {
                 error(err, data);
             }
-            gl.res.json(err || data);
+            res.json(err || data);
         }
     }
 }
@@ -37,12 +37,12 @@ var methods = {
     find: function (sql, success, error) {
         AV.Query.doCloudQuery(sql, {success: success, error: error});
     },
-    findAndSend: function (sql) {
+    findAndSend: function (sql, res) {
         console.log('sql: ', sql);
         methods.find(sql, function (result) {
-            gl.res.json({code: 0, data: result});
+            res.json({code: 0, data: result});
         }, function (err) {
-            gl.res.json(err);
+            res.json(err);
         });
     },
     findById: function (className, objectId, success, error) {
@@ -75,22 +75,22 @@ var methods = {
         }
         return d;
     },
-    newAndSave: function (className, data) {
+    newAndSave: function (className, data, res) {
         console.log('newAndSave', JSON.stringify(data));
         var d = methods.new(className, data);
-        d.save(null, send());
+        d.save(null, send(null, null, res));
     },
     withId: function (className, objectId) {
         var obj = methods.new(className);
         obj.id = objectId;
         return obj;
     },
-    editWithId: function (className, objectId, data) {
+    editWithId: function (className, objectId, data, res) {
         var post = AV.Object.createWithoutData(className, objectId);
         for (var attr in data) {
             post.set(attr, data[attr]);
         }
-        post.save(null, send());
+        post.save(null, send(null, null, res));
     },
     /**查找对象，并根据条件函数返回结果确定是否修改值
      * className: 类
@@ -98,7 +98,7 @@ var methods = {
      * conditionFunc： 条件函数，假如返回true，则修改查询结果
      * data： 要修改的值
      * */
-    editCondition: function (className, objectId, conditionFunc, data) {
+    editCondition: function (className, objectId, conditionFunc, data, res) {
         console.log('editCondition');
         methods.findById(className, objectId, function (result) {
             console.log('查询到结果：', JSON.stringify(result));
@@ -106,13 +106,13 @@ var methods = {
                 for (var attr in data) {
                     result.set(attr, data[attr]);
                 }
-                result.save(null, send());
+                result.save(null, send(null, null, res));
             } else {
-                gl.res.json({code: 1, message: '没有权限进行该操作！'});
+                res.json({code: 1, message: '没有权限进行该操作！'});
             }
         }, function (err) {
             console.log('查询出错！');
-            gl.res.json(err);
+            res.json(err);
         });
     },
     extend: function () {
@@ -132,7 +132,7 @@ var methods = {
     right: {
         needLogin: function (req, res, next) {
             // console.log('session.user', req.session.user);
-            if (methods.user.isLogin()) {
+            if (methods.user.isLogin(req)) {
                 return next();
             }
             res.json({code: 1, message: '你还未登录'});
@@ -147,7 +147,7 @@ var methods = {
     user: {
         new: function (req, res) {
             var d = methods.new('User', data);
-            d.signUp(null, send());
+            d.signUp(null, send(null, null, res));
         },
         login: function (req, res) {
             var data = req.data;
@@ -156,11 +156,11 @@ var methods = {
                 data = JSON.parse(JSON.stringify(data));
                 console.log('用户登录成功：', data.username);
                 req.session.user = data;
-            }))
+            }, null, res))
         }
         ,
-        isLogin: function () {
-            var user = gl.req.session.user;
+        isLogin: function (req) {
+            var user = req.session.user;
             if (user && user.objectId) {
                 console.log('已经登陆');
                 return true;
@@ -208,16 +208,21 @@ var methods = {
             if (d.Project) {
 
             }
-            methods.newAndSave('Todo', d);
+            methods.newAndSave('Todo', d, res);
         },
         // todo列表 finished:bool,begin:number,finish:number,type: started,finished
         list: function (req, res) {
             var data = req.data;
             var sql = "select count(*),* from Todo where user = pointer('_User','" + req.session.user.objectId + "')";
+
+            if (data.project) {
+                sql += ' and project = pointer("Project","' + data.project + '")';
+            }
+
             if (data.finished + '' == 'true') {
                 sql += ' and finish is exists and finish < ' + Date.now();
             } else if (data.finished + '' == 'false') {
-                sql += ' and ( finish is not exists or finish > ' + gl.nowStr() + ')';
+                sql += ' and ( finish is not exists or finish > ' + Date.now() + ')';
             }
             // 某一个时间节点之间的任务
             if (data.begin && data.finish) {
@@ -225,7 +230,7 @@ var methods = {
             else if (data.finish) {
             }
             // sql += ' order by updateAt desc';
-            methods.findAndSend(sql);
+            methods.findAndSend(sql, res);
         }
         ,
         // 修改信息 id:'',   name: '',project:''
@@ -235,6 +240,7 @@ var methods = {
             delete data.id;
             delete data.user;
             var data = methods.todo.transfer(data);
+            // todo： 优化为update语句，只修改有权限的
             methods.editCondition('Todo', id, function (result) {
                 if (result) {
                     var user = result.get('user');
@@ -243,7 +249,7 @@ var methods = {
                     }
                 }
                 return false;
-            }, data);
+            }, data, res);
         }
     },
     /**转换数据类型*/
@@ -282,11 +288,11 @@ var methods = {
             methods.newAndSave('Project', {
                 name: data.name,
                 user: methods.user.myRef()
-            });
+            }, res);
         },
         // project列表
         list: function (req, res) {
-            methods.findAndSend("select count(*),* from Project where user = pointer('_User','" + req.session.user.objectId + "')");
+            methods.findAndSend("select count(*),* from Project where user = pointer('_User','" + req.session.user.objectId + "')", res);
         }
     }
 };

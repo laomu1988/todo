@@ -8,7 +8,7 @@
     <span class="pull-right" onclick="{register}" if="{!isLogin}">
         <i class="glyphicon glyphicon-expand"></i> 注册
     </span>
-    <span class="pull-right" if="{isLogin}">
+    <span class="pull-right" if="{isLogin}" onclick="{logout}">
         <i class="glyphicon glyphicon-log-out"></i> 退出
     </span>
 
@@ -17,6 +17,14 @@
         self.login = function () {
             web.mount('login');
         };
+        self.logout = function () {
+            web.services.logout(function () {
+                self.user = web.getUser();
+                self.isLogin = !!self.user;
+                self.update();
+            });
+        };
+
         self.register = function () {
             web.mount('register');
         };

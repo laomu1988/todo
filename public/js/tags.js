@@ -19,11 +19,19 @@ riot.tag('dialog', ' <div class="model" style="display: block;"> <div class="mod
         });
     
 });
-riot.tag('header', '<span> <i class="glyphicon glyphicon-user"></i> {user.username} </span> <span class="pull-right" onclick="{login}" if="{!isLogin}"> <i class="glyphicon glyphicon-log-in"></i> 登录 </span> <span class="pull-right" onclick="{register}" if="{!isLogin}"> <i class="glyphicon glyphicon-expand"></i> 注册 </span> <span class="pull-right" if="{isLogin}"> <i class="glyphicon glyphicon-log-out"></i> 退出 </span>', function(opts) {
+riot.tag('header', '<span> <i class="glyphicon glyphicon-user"></i> {user.username} </span> <span class="pull-right" onclick="{login}" if="{!isLogin}"> <i class="glyphicon glyphicon-log-in"></i> 登录 </span> <span class="pull-right" onclick="{register}" if="{!isLogin}"> <i class="glyphicon glyphicon-expand"></i> 注册 </span> <span class="pull-right" if="{isLogin}" onclick="{logout}"> <i class="glyphicon glyphicon-log-out"></i> 退出 </span>', function(opts) {
         var self = this;
         self.login = function () {
             web.mount('login');
         };
+        self.logout = function () {
+            web.services.logout(function () {
+                self.user = web.getUser();
+                self.isLogin = !!self.user;
+                self.update();
+            });
+        };
+
         self.register = function () {
             web.mount('register');
         };
@@ -50,6 +58,7 @@ riot.tag('login', '<div class="modal"> <div class="modal-dialog"> <div class="mo
                 callback: function (data) {
                     if (data && data.code == 0 && data.data.username) {
                         web.setCookie('user', data.data);
+                        $(self.root).find('.modal').modal('hide');
                         self.unmount();
                         web.trigger('update');
                     }

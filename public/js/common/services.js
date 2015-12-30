@@ -2,6 +2,10 @@ web.services = {
     login: function (data, callback) {
         web.get('user/login', data, callback);
     },
+    logout: function (data, callback) {
+        web.setCookie('user', '');
+        web.get('user/logout', data, callback);
+    },
     todo: {
         new: function (data, callback) {
             web.get('todo/new', data, callback);
@@ -15,7 +19,7 @@ web.services = {
         finish: function (todoId, callback) {
             web.services.todo.edit({
                 id: todoId,
-                finishDate: Date.now()
+                finish: Date.now()
             }, callback);
         },
         unfinish: function (todoId, callback) {
@@ -32,7 +36,7 @@ web.services = {
                 id: todoId,
                 removed: false
             }, callback);
-        },
+        }
 
     },
     project: {
