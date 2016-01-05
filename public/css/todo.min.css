@@ -1,6 +1,8 @@
 header{font-size:16px;line-height:40px;height:40px;padding:0 10px;background:#000;color:#fff}
 header span{cursor:pointer;padding:0 10px}
 header span:hover{color:#d58512}
+body{line-height:26px;font-size:14px}
+input[type=checkbox]{height:16px;width:16px;vertical-align:middle;margin-right:3px}
 .main-box{padding:0;overflow:hidden}
 .main-box>menu{width:80px;float:left;margin-right:-80px;padding:0}
 .main-box>menu ul{padding:0;margin:0;list-style:none}

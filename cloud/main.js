@@ -16,6 +16,7 @@ var routes = [
     {url: '/api/todo/new', handles: [Data.right.needLogin, Data.todo.new]},
     {url: '/api/todo/list', handles: [Data.right.needLogin, Data.todo.list]},
     {url: '/api/todo/edit', handles: [Data.right.needLogin, Data.todo.edit]},
+    {url: '/api/todo/unfinish', handles: [Data.right.needLogin, Data.todo.unfinish]},
     {url: '/api/project/new', handles: [Data.right.needLogin, Data.project.new]},
     {url: '/api/project/list', handles: [Data.right.needLogin, Data.project.list]}
 ];

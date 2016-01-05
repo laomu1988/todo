@@ -27,17 +27,11 @@ module.exports = {
     ,
     isAdmin: function () {
 
-    }
-    ,
-    myRef: function () {
-        console.log('myRef:', gl.req.session.user.objectId);
-        return gl.withId('User', gl.req.session.user.objectId);
-    }
-    ,
-    myInfo: function () {
-        return gl.req.session.user;
-    }
-    ,
+    },
+    myRef: function (req) {
+        //console.log('myRef:', req.session.user.objectId);
+        return gl.withId('User', req.session.user.objectId);
+    },
     logout: function (res) {
 
     }

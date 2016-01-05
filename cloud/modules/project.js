@@ -3,7 +3,7 @@ module.exports = {
         var data = req.data;
         gl.newAndSave('Project', {
             name: data.name,
-            user: gl.user.myRef()
+            user: gl.user.myRef(req)
         }, res);
     },
     // project列表

@@ -70,15 +70,20 @@ riot.tag('login', '<div class="modal"> <div class="modal-dialog"> <div class="mo
         })
     
 });
-riot.tag('menu', ' <div>新建</div> <ul> <li> <a href="#method=new&type=todo"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li> <li> <a href="#method=new&type=project"><i class="glyphicon glyphicon-list-alt"></i> </a> </li> </ul> <div>查看</div> <ul> <li> <a href="#method=todo"><i class="glyphicon glyphicon-star"></i> 今日代办</a></li> <li><i class="glyphicon glyphicon-calendar"></i> 日历</li> </ul> <div if="{projects && projects.length > 0}">项目</div> <ul> <li each="{projects}"> <a href="#method=project&project={objectId}"><i class="glyphicon glyphicon-list"></i> {name}</a></li> </ul> <div>状态</div> <ul> <li> <a href="#method=finished"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li> <li> <a href="#method=delete"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li> </ul>', function(opts) {
+riot.tag('menu', ' <div>新建</div> <ul> <li> <a href="#method=new&type=todo"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li> <li> <a href="#method=new&type=project"><i class="glyphicon glyphicon-list-alt"></i> 新项目</a> </li> </ul> <div>查看</div> <ul> <li> <a href="#method=todo"><i class="glyphicon glyphicon-star"></i> 今日代办</a></li> <li><i class="glyphicon glyphicon-calendar"></i> 日历</li> </ul> <div if="{projects && projects.length > 0}">项目</div> <ul> <li each="{projects}"> <a href="#method=project&project={objectId}"><i class="glyphicon glyphicon-list"></i> {name}</a></li> </ul> <div>状态</div> <ul> <li> <a href="#method=finished"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li> <li> <a href="#method=deleted"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li> </ul>', function(opts) {
         var self = this;
         self.projects = [];
-        web.services.project.list(function (data) {
-            console.log(data);
-            if (data && data.data && data.data.results) {
-                self.projects = data.data.results;
-                self.update();
-            }
+        self.updateMenu = function () {
+            web.services.project.list(function (data) {
+                if (data && data.data && data.data.results) {
+                    self.projects = data.data.results;
+                    self.update();
+                }
+            });
+        };
+        self.updateMenu();
+        web.on('update', function () {
+            self.updateMenu();
         });
     
 });
@@ -119,17 +124,29 @@ riot.tag('register', '<div class="modal"> <div class="modal-dialog"> <div class=
         })
     
 });
-riot.tag('todo_list', '<div each="{opts.results}"> <input type="checkbox" value="" onclick="{finish}" todo_id="{objectId}">{name} </div>', function(opts) {
+riot.tag('todo_list', '<div each="{opts.results}"> <input type="checkbox" value="" onclick="{finish_todo}" todo_id="{objectId}" __checked="{finish}">{name} </div>', function(opts) {
         var self = this;
         console.log(self.opts);
-        self.finish = function (e) {
+        self.finish_todo = function (e) {
             var id = e.target.getAttribute('todo_id');
-            web.services.todo.edit({id: id, finishDate: Date.now()}, function (data) {
+            var services = e.target.checked ? web.services.todo.finish : web.services.todo.unfinish;
+            services(id,function(data){
                 if (data && data.code == 0) {
-                    alert('完成！');
+                    web.message('操作成功！');
+                    $(e.target).parent().remove();
+                } else {
+                    web.message((data && data.message) || '操作失败！');
                 }
             });
-        }
+        };
+        web.on('new_todo', function (data) {
+            if (data && data.objectId) {
+                self.opts.results.unshift(data);
+                self.update();
+            } else {
+                web.message('新任务内容为空！');
+            }
+        });
     
 });
 
@@ -140,10 +157,16 @@ riot.tag('todo_new', '<input type="text" placeholder="新任务" onkeyup="{inser
             if (e.keyCode == 13) {
                 var val = e.target.value;
                 web.services.todo.new({
-                    name: val
+                    name: val,
+                    project: web._hashs.project,
+                    pid: web._hashs.todo
                 }, function (data) {
                     if (data && data.code == 0) {
-                        alert('新任务：' + val);
+                        web.message('添加新任务“' + val + '”成功！');
+                        web.trigger('new_todo', data.data);
+                        e.target.value = '';
+                    } else {
+                        web.message((data && data.message) || '添加新任务失败！');
                     }
                 });
             }

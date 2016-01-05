@@ -1,5 +1,5 @@
 $(function () {
-    riot.route(function () {
+    function route() {
         var method = web._hashs.method;
         switch (method) {
             case 'project':
@@ -18,9 +18,28 @@ $(function () {
                     }
                 });
                 break;
+            case 'finished':
+                riot.mount('todo_new');
+                web.services.todo.list({finished: true}, function (result) {
+                    if (result && result.code == 0) {
+                        riot.mount('todo_list', result.data);
+                    }
+                });
+                break;
+            case 'deleted':
+                riot.mount('todo_new');
+                web.services.todo.list({deleted: true}, function (result) {
+                    if (result && result.code == 0) {
+                        riot.mount('todo_list', result.data);
+                    }
+                });
+                break;
         }
+    }
 
-    });
+    riot.route(route);
+
+    route();
 
     /*riot.mount('header');
      web.services.login({username: 'laomu1988', password: '123456'}, function () {

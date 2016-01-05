@@ -1,4 +1,6 @@
 global.gl = global.gl || {};
+/**将AV对象包裹在此*/
+var classes = {};
 
 gl.extend = function () {
     var ret = arguments[0];
@@ -159,6 +161,9 @@ gl.extend(gl, {
                     break;
                 case 'Project':
                 case 'User':
+                case 'Todo':
+                case 'Role':
+                case 'History':
                     d[attr] = gl.withId(typeArray[attr], data[attr]);
                     break;
                 default:
