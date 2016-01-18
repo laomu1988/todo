@@ -29,8 +29,8 @@ gulp.task('riot', function () {
 gulp.task('importjs', ['riot'], function () {
     // importjs
     return gulp.src([config.src + 'js/*.js', config.src + 'js/*/*.js'])
-        .pipe(gulp.dest(config.dest + 'js'))
         .pipe(plugins.imports())
+        .pipe(gulp.dest(config.dest + 'js'))
         .pipe(gulp.dest(config.dest + 'js'));
     //console.log('import完毕；')
 });
