@@ -1,0 +1,3 @@
+web.config = {
+    server: '/api/'
+}
