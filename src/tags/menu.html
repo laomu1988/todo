@@ -1,0 +1,54 @@
+<menu>
+    <!--左侧菜单
+    新建
+    查看 今日待办，项目列表
+
+    状态：
+    已完成
+    已删除
+
+    -->
+    <div>新建</div>
+    <ul>
+        <li>
+            <a href="#method=new&type=todo"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li>
+        <li>
+            <a href="#method=new&type=project"><i class="glyphicon glyphicon-list-alt"></i> 新项目</a>
+        </li>
+    </ul>
+    <div>查看</div>
+    <ul>
+        <li>
+            <a href="#method=todo"><i class="glyphicon glyphicon-star"></i> 今日代办</a></li>
+        <li><i class="glyphicon glyphicon-calendar"></i> 日历</li>
+    </ul>
+    <div if="{projects && projects.length > 0}">项目</div>
+    <ul>
+        <li each="{projects}">
+            <a href="#method=project&project={objectId}"><i class="glyphicon glyphicon-list"></i> {name}</li>
+        </a>
+    </ul>
+    <div>状态</div>
+    <ul>
+        <li>
+            <a href="#method=finished"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li>
+        <li>
+            <a href="#method=deleted"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li>
+    </ul>
+    <script>
+        var self = this;
+        self.projects = [];
+        self.updateMenu = function () {
+            web.services.project.list(function (data) {
+                if (data && data.data && data.data.results) {
+                    self.projects = data.data.results;
+                    self.update();
+                }
+            });
+        };
+        self.updateMenu();
+        web.on('update', function () {
+            self.updateMenu();
+        });
+    </script>
+</menu>

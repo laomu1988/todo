@@ -7,10 +7,16 @@
             if (e.keyCode == 13) {
                 var val = e.target.value;
                 web.services.todo.new({
-                    name: val
+                    name: val,
+                    project: web._hashs.project,
+                    pid: web._hashs.todo
                 }, function (data) {
                     if (data && data.code == 0) {
-                        alert('新任务：' + val);
+                        web.message('添加新任务“' + val + '”成功！');
+                        web.trigger('new_todo', data.data);
+                        e.target.value = '';
+                    } else {
+                        web.message((data && data.message) || '添加新任务失败！');
                     }
                 });
             }
