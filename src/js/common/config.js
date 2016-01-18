@@ -1,4 +1,3 @@
-web.config = $.extend(web.config, {
+var config = web.config = {
     server: '/api/'
-});
-var config = web.config;
+};

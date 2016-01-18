@@ -1,3 +1,4 @@
+var fs = require('fs');
 var path = require('path');
 var gulp = require('gulp');
 var dateformat = require('dateformat');
@@ -7,8 +8,8 @@ var plugins = require('gulp-load-plugins')({
     replaceString: /\bgulp[\-.]/
 });
 var config = {
-    src: './src',
-    dest: './public/',
+    src: './',
+    dest: '../public/',
     version: function () {
         return dateformat('yyyy-mm-dd-hh');
     }
@@ -28,8 +29,8 @@ gulp.task('riot', function () {
 gulp.task('importjs', ['riot'], function () {
     // importjs
     return gulp.src([config.src + 'js/*.js', config.src + 'js/*/*.js'])
-        .pipe(gulp.dest(config.dest + 'js'))
         .pipe(plugins.imports())
+        .pipe(gulp.dest(config.dest + 'js'))
         .pipe(gulp.dest(config.dest + 'js'));
     //console.log('import完毕；')
 });
