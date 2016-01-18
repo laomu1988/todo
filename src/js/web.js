@@ -16,3 +16,10 @@ $(function () {
     riot.mount('menu');
 
 });
+
+web.new_todo = function () {
+    web.dialog('new_todo', '新任务', {type: 'todo'});
+};
+web.new_project = function () {
+    web.dialog('new_todo', '新项目', {type: 'project'});
+};
