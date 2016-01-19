@@ -25,8 +25,9 @@
     </ul>
     <div if="{projects && projects.length > 0}">项目</div>
     <ul>
-        <li each="{projects}" ondrop="" ondragover="{ondragover}" ondrop="{ondrop}">
-            <a href="#method=project&project={objectId}" ondragover="{ondragover}" ondrop="{ondrop}"><i
+        <li each="{projects}">
+            <a href="#method=project&project={objectId}" ondragover="{ondragover}" ondrop="{ondrop}"
+               project_id="{objectId}"><i
                     class="glyphicon glyphicon-list"></i> {name}</li>
         </a>
     </ul>
@@ -58,10 +59,22 @@
             return true;
         };
         self.ondrop = function (e) {
-            console.log(e, e.relatedTarget, e.dataTransfer);
-            console.log(web.__drag);
+            //console.log(web.__drag);
+            if (web.__drag) {
+                var drag = web.__drag;
+                var name = drag.getAttribute('name'), id = drag.getAttribute('todo_id'), project_id = e.target.getAttribute('project_id');
+                web.services.todo.edit({
+                    id: id,
+                    project: project_id
+                }, function (data) {
+                    if (data.code == 0) {
+                        web.message('修改成功！');
+                    } else {
+                        web.message('修改失败！');
+                    }
+                });
+            }
             return true;
-
         };
     </script>
 </menu>
