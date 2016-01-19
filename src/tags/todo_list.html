@@ -1,6 +1,7 @@
 <todo_list>
     <style>
     </style>
+    <div riot-tag="todo_new"></div>
     <div each="{opts.results}">
         <input type="checkbox" value="" onclick="{finish_todo}" todo_id={objectId} checked="{finish}">{name}
     </div>
@@ -10,7 +11,7 @@
         self.finish_todo = function (e) {
             var id = e.target.getAttribute('todo_id');
             var services = e.target.checked ? web.services.todo.finish : web.services.todo.unfinish;
-            services(id,function(data){
+            services(id, function (data) {
                 if (data && data.code == 0) {
                     web.message('操作成功！');
                     $(e.target).parent().remove();
