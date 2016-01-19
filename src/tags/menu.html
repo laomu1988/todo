@@ -25,8 +25,9 @@
     </ul>
     <div if="{projects && projects.length > 0}">项目</div>
     <ul>
-        <li each="{projects}">
-            <a href="#method=project&project={objectId}"><i class="glyphicon glyphicon-list"></i> {name}</li>
+        <li each="{projects}" ondrop="" ondragover="{ondragover}" ondrop="{ondrop}">
+            <a href="#method=project&project={objectId}" ondragover="{ondragover}" ondrop="{ondrop}"><i
+                    class="glyphicon glyphicon-list"></i> {name}</li>
         </a>
     </ul>
     <div>状态</div>
@@ -51,5 +52,16 @@
         web.on('update', function () {
             self.updateMenu();
         });
+
+        self.ondragover = function (e) {
+            e.preventDefault();
+            return true;
+        };
+        self.ondrop = function (e) {
+            console.log(e, e.relatedTarget, e.dataTransfer);
+            console.log(web.__drag);
+            return true;
+
+        };
     </script>
 </menu>
