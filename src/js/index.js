@@ -23,8 +23,8 @@ $(function () {
                     }
                 });
                 break;
-            case 'deleted':
-                web.services.todo.list({deleted: true}, function (result) {
+            case 'removed':
+                web.services.todo.list({removed: true}, function (result) {
                     if (result && result.code == 0) {
                         riot.mount('todo_list', result.data);
                     }

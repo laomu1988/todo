@@ -29,14 +29,15 @@ module.exports = {
             sql += ' and project = pointer("Project","' + data.project + '")';
         }
 
-        if (data.finished + '' == 'true') {
-            sql += ' and finish is exists and finish != 0 and finish < ' + Date.now();
-        } else if (data.finished != 'all') {
-            sql += ' and ( finish is not exists or finish = 0 or finish > ' + Date.now() + ')';
-        }
-
-        if (data.deleted + '' == 'true') {
+        if (data.removed + '' == 'true') {
+            // 已经删除的任务
             sql += ' and removed = true';
+        } else if (data.finished + '' == 'true') {
+            // 已经完成的任务
+            sql += ' and removed = false and finish is exists and finish != 0 and finish < ' + Date.now();
+        } else if (data.finished != 'all') {
+            // 未完成的任务
+            sql += ' and removed = false and ( finish is not exists or finish = 0 or finish > ' + Date.now() + ')';
         }
 
         // 某一个时间节点之间的任务

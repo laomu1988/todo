@@ -45,6 +45,30 @@ web.services = {
         },
         list: function (data, callback) {
             web.get('project/list', data, callback);
+        },
+        edit: function (data, callback) {
+            web.get('project/edit', data, callback);
+        },
+        finish: function (todoId, callback) {
+            web.services.project.edit({
+                id: todoId,
+                finish: Date.now()
+            }, callback);
+        },
+        unfinish: function (todoId, callback) {
+            web.get('project/unfinish', {id: todoId}, callback);
+        },
+        remove: function (todoId, callback) {
+            web.services.project.edit({
+                id: todoId,
+                removed: true
+            }, callback);
+        },
+        unremove: function (todoId, callback) {
+            web.services.project.edit({
+                id: todoId,
+                removed: false
+            }, callback);
         }
     }
 };

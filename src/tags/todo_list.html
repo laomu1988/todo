@@ -2,7 +2,7 @@
     <style>
     </style>
     <div riot-tag="todo_new"></div>
-    <div each="{opts.results}" draggable="true" todo_id="{objectId}" ondragstart="{ondrag}" name="{name}">
+    <div each="{opts.results}" draggable="true" todo_id="{objectId}" ondragstart="{web.ondrag}" name="{name}">
         <input type="checkbox" value="" onclick="{finish_todo}" todo_id={objectId} checked="{finish}">{name}
     </div>
     <script>
@@ -31,12 +31,6 @@
         web.on('drop', function (data) {
 
         });
-        self.ondrag = function (e) {
-            var target = e.currentTarget || e.target;
-            web.__drag = target;
-            return true;
-        }
-
     </script>
 </todo_list>
 

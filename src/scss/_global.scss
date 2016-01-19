@@ -6,8 +6,9 @@ body {
 input[type=checkbox] {
   height: 16px;
   width: 16px;
-  vertical-align: middle;
+  vertical-align: top;
   margin-right: 3px;
+  margin-top: 5px;
 }
 
 input, textarea {
@@ -18,7 +19,6 @@ input, textarea {
 
 textarea {
   min-height: 100px;
-  border: 0;
 }
 
 .one-line {
@@ -49,6 +49,6 @@ textarea {
     }
   }
   & > .main {
-    margin-left: 160px;
+    margin: 10px 10px 10px 160px;
   }
 }

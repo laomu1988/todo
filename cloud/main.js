@@ -18,7 +18,8 @@ var routes = [
     {url: '/api/todo/edit', handles: [Data.right.needLogin, Data.todo.edit]},
     {url: '/api/todo/unfinish', handles: [Data.right.needLogin, Data.todo.unfinish]},
     {url: '/api/project/new', handles: [Data.right.needLogin, Data.project.new]},
-    {url: '/api/project/list', handles: [Data.right.needLogin, Data.project.list]}
+    {url: '/api/project/list', handles: [Data.right.needLogin, Data.project.list]},
+    {url: '/api/project/edit', handles: [Data.right.needLogin, Data.project.edit]}
 ];
 function before(req, res, next) {
     req.data = req.method == 'GET' ? req.query : req.body;

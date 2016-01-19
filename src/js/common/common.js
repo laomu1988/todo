@@ -18,3 +18,6 @@ riot.observable(web);
 // import('isLogin.js');
 
 // import('params.js');
+// import('attrs.js');
+
+// import('drag.js');

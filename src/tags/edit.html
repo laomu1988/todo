@@ -1,18 +1,19 @@
-<new_todo>
+<edit>
     <style>
         .bottom {
             text-align: right;
         }
     </style>
     <div>
-        <input type="text" name="todo" placeholder="任务名称">
+        <input type="text" name="todo" placeholder="名称">
     </div>
     <div>
-        <textarea type="text" name="description" placeholder="任务详情"></textarea>
+        <textarea type="text" name="description" placeholder="详情"></textarea>
     </div>
     <div class="children">
 
     </div>
+    <div class="">状态</div>
     <div class="bottom">
         <div class="btn btn-cancel" onclick="{cancel}">取消</div>
         <div class="btn btn-primary" onclick="{submit}">确定</div>
@@ -45,4 +46,4 @@
             });
         }
     </script>
-</new_todo>
+</edit>

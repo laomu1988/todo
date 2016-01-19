@@ -164,6 +164,9 @@ gl.extend(gl, {
                 case 'Todo':
                 case 'Role':
                 case 'History':
+                case 'Group':
+                case 'GroupMember':
+                case 'Stage':
                     d[attr] = gl.withId(typeArray[attr], data[attr]);
                     break;
                 default:
