@@ -1,0 +1,15 @@
+header {
+  font-size: 16px;
+  line-height: 40px;
+  height: 40px;
+  padding: 0 10px;
+  background: #000;
+  color: #fff;
+  span {
+    cursor: pointer;
+    padding: 0 10px;
+    &:hover {
+      color: #d58512;
+    }
+  }
+}

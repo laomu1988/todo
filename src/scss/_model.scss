@@ -1,0 +1,16 @@
+.model_message {
+  position: fixed;
+  z-index: $z-alert;
+  color: #fff;
+  top: 200px;
+  text-align: center;
+  width: 100%;
+  .message {
+    width: auto;
+    padding: 20px 60px;
+    background: rgba(0, 0, 0, 0.6);
+    display: inline-block;
+    border-radius: 10px;
+    font-size: 20px;
+  }
+}

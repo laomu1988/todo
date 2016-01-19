@@ -1,7 +1,5 @@
 web = {
-    config: {
-        server: '/api/'
-    }
+
 };
 var config = web.config;
 web.ajax =

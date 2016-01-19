@@ -1,7 +1,6 @@
 // Use AV.Cloud.define to define as many cloud functions as you want.
 // For example:
-var Data = require('cloud/Data.js');
-var gl = Data.gl;
+var Data = require('cloud/gl.js');
 // 在 Cloud code 里初始化 Express 框架
 var express = require('express');
 var app = express();
@@ -17,13 +16,11 @@ var routes = [
     {url: '/api/todo/new', handles: [Data.right.needLogin, Data.todo.new]},
     {url: '/api/todo/list', handles: [Data.right.needLogin, Data.todo.list]},
     {url: '/api/todo/edit', handles: [Data.right.needLogin, Data.todo.edit]},
+    {url: '/api/todo/unfinish', handles: [Data.right.needLogin, Data.todo.unfinish]},
     {url: '/api/project/new', handles: [Data.right.needLogin, Data.project.new]},
     {url: '/api/project/list', handles: [Data.right.needLogin, Data.project.list]}
 ];
 function before(req, res, next) {
-    gl.req = req;
-    gl.next = next;
-    gl.res = res;
     req.data = req.method == 'GET' ? req.query : req.body;
     delete req.data.__proto__;
     console.log(req.data);
