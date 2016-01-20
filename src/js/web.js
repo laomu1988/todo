@@ -17,9 +17,13 @@ $(function () {
 
 });
 
+web.errmsg = function (result, msg) {
+    web.message((result && result.message) || msg);
+};
+
 web.new_todo = function () {
-    web.dialog('edit', '新任务', {type: 'todo'});
+    web.dialog('edit', {title: '新任务', type: 'todo'});
 };
 web.new_project = function () {
-    web.dialog('edit', '新项目', {type: 'project'});
+    web.dialog('edit', {title: '新项目', type: 'project'});
 };

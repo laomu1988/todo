@@ -2,7 +2,9 @@
     <style>
     </style>
     <div riot-tag="todo_new"></div>
-    <div each="{opts.results}" draggable="true" todo_id="{objectId}" ondragstart="{web.ondrag}" name="{name}">
+    <div each="{opts.results}" draggable="true" o-type="todo" o-id="{objectId}" todo_id="{objectId}"
+         ondragstart="{web.ondrag}" name="{name}"
+         onclick="{edit}">
         <input type="checkbox" value="" onclick="{finish_todo}" todo_id={objectId} checked="{finish}">{name}
     </div>
     <script>
@@ -28,9 +30,18 @@
                 web.message('新任务内容为空！');
             }
         });
-        web.on('drop', function (data) {
-
-        });
+        self.edit = function (e) {
+            var id = e.target.getAttribute('o-id');
+            if (id) {
+                web.services.todo.get(id, function (result) {
+                    if (result && result.code == 0 && result.data) {
+                        web.dialog('edit', {title: '任务详情', type: 'todo', data: result.data});
+                    } else {
+                        web.errmsg(result, '未找到任务！')
+                    }
+                });
+            }
+        };
     </script>
 </todo_list>
 

@@ -5,10 +5,10 @@
         }
     </style>
     <div>
-        <input type="text" name="todo" placeholder="名称">
+        <input type="text" name="name" placeholder="名称" value="{opts.data.name}">
     </div>
     <div>
-        <textarea type="text" name="description" placeholder="详情"></textarea>
+        <textarea type="text" name="detail" placeholder="详情">{opts.data.detail}</textarea>
     </div>
     <div class="children">
 
@@ -27,21 +27,28 @@
             }
         };
         self.submit = function () {
-            var name = self.todo.value;
-            var description = self.description.value;
-            var server = web.services[self.opts.type];
+            var data = {
+                name: self.name.value,
+                detail: self.detail.value
+            };
+            var server = web.services[self.opts.type], action = '新建';
             if (!server) {
                 web.message('未知操作');
                 return self.cancel();
             }
-            server.new({
-                name: self.todo.value
-            }, function (data) {
+            if (self.opts.data && self.opts.data.objectId) {
+                data.id = self.opts.data.objectId;
+                server = server.edit;
+                action = '修改';
+            } else {
+                server = server.new;
+            }
+            server(data, function (data) {
                 if (data && data.code == 0) {
-                    web.message('添加成功！');
+                    web.message(action + '成功！');
                     self.cancel();
                 } else {
-                    web.message((data && data.message) || '添加失败！');
+                    web.errmsg(data, action + '失败！');
                 }
             });
         }

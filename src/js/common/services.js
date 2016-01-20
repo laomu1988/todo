@@ -10,6 +10,9 @@ web.services = {
         new: function (data, callback) {
             web.get('todo/new', data, callback);
         },
+        get: function (todoId, callback) {
+            web.get('todo/get', {id: todoId}, callback);
+        },
         list: function (data, callback) {
             web.get('todo/list', data, callback);
         },
