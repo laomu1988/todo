@@ -4,12 +4,12 @@ module.exports = {
         if (gl.user.isLogin(req)) {
             return next();
         }
-        res.json({code: 1, message: '你还未登录'});
+        gl.error(res, 'need_login');
     },
     needAdmin: function (req, res, next) {
         if (gl.user.isAdmin()) {
             return next();
         }
-        res.json({code: 1, message: '没有权限！'});
+        gl.error(res, 'need_right');
     }
 };

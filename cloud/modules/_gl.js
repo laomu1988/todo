@@ -37,12 +37,10 @@ gl.extend(gl, {
     },
     clearData: function (data) {
         return JSON.parse(JSON.stringify(data));
-    }
-    ,
+    },
     find: function (sql, success, error) {
         AV.Query.doCloudQuery(sql, {success: success, error: error});
-    }
-    ,
+    },
     findAndSend: function (sql, res) {
         console.log('sql: ', sql);
         gl.find(sql, function (result) {
@@ -50,8 +48,7 @@ gl.extend(gl, {
         }, function (err) {
             res.json(err);
         });
-    }
-    ,
+    },
     findById: function (className, objectId, success, error) {
         console.log('findById', className, objectId, success, error);
         var query = new AV.Query(gl.class(className));
@@ -59,15 +56,17 @@ gl.extend(gl, {
             success: success,
             error: error
         });
-    }
-    ,
+    },
+    sendById: function (className, objectId, res) {
+        var query = new AV.Query(gl.class(className));
+        query.get(objectId, gl.send(res));
+    },
     class: function (className) {
         if (!classes[className]) {
             return classes[className] = AV.Object.extend(className);
         }
         return classes[className];
-    }
-    ,
+    },
     new: function (className, data) {
         if (!classes[className]) {
             classes[className] = AV.Object.extend(className);
@@ -83,8 +82,7 @@ gl.extend(gl, {
             }
         }
         return d;
-    }
-    ,
+    },
     newAndSave: function (className, data, res) {
         console.log('newAndSave', JSON.stringify(data));
         var d = gl.new(className, data);
@@ -101,8 +99,7 @@ gl.extend(gl, {
             post.set(attr, data[attr]);
         }
         post.save(null, gl.send(res));
-    }
-    ,
+    },
     /**查找对象，并根据条件函数返回结果确定是否修改值
      * className: 类
      * objectId： 对象id
@@ -125,22 +122,7 @@ gl.extend(gl, {
             console.log('查询出错！');
             res.json(err);
         });
-    }
-    ,
-    extend: function () {
-        var ret = arguments[0];
-        for (var i = 1; i < arguments.length; i++) {
-            var val = arguments[i];
-            for (var attr in val) {
-                if (attr.indexOf('__') >= 0) {
-                    continue;
-                }
-                ret[attr] = val;
-            }
-        }
-        return ret;
-    }
-    ,
+    },
     /**转换数据类型*/
     transferData: function (data, typeArray, keep) {
         var d = {};
@@ -177,5 +159,4 @@ gl.extend(gl, {
         }
         return d;
     }
-})
-;
+});

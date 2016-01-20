@@ -1,6 +1,6 @@
 // Use AV.Cloud.define to define as many cloud functions as you want.
 // For example:
-var Data = require('cloud/gl.js');
+var gl = require('cloud/gl.js');
 // 在 Cloud code 里初始化 Express 框架
 var express = require('express');
 var app = express();
@@ -11,16 +11,18 @@ app.use(express.cookieSession({secret: 'todo2015', name: 'todo', cookie: {maxAge
 
 
 var routes = [
-    {url: '/api/user/signup', handles: [Data.user.new], method: 'all'},
-    {url: '/api/user/login', handles: [Data.user.login]},
-    {url: '/api/todo/new', handles: [Data.right.needLogin, Data.todo.new]},
-    {url: '/api/todo/list', handles: [Data.right.needLogin, Data.todo.list]},
-    {url: '/api/todo/edit', handles: [Data.right.needLogin, Data.todo.edit]},
-    {url: '/api/todo/unfinish', handles: [Data.right.needLogin, Data.todo.unfinish]},
-    {url: '/api/project/new', handles: [Data.right.needLogin, Data.project.new]},
-    {url: '/api/project/list', handles: [Data.right.needLogin, Data.project.list]},
-    {url: '/api/project/edit', handles: [Data.right.needLogin, Data.project.edit]}
+    {url: '/api/user/signup', handles: [gl.user.new], method: 'all'},
+    {url: '/api/user/login', handles: [gl.user.login]},
+    {url: '/api/todo/new', handles: [gl.right.needLogin, gl.todo.new]},
+    {url: '/api/todo/list', handles: [gl.right.needLogin, gl.todo.list]},
+    {url: '/api/todo/edit', handles: [gl.right.needLogin, gl.todo.edit]},
+    {url: '/api/todo/unfinish', handles: [gl.right.needLogin, gl.todo.unfinish]},
+    {url: '/api/project/new', handles: [gl.right.needLogin, gl.project.new]},
+    {url: '/api/project/list', handles: [gl.right.needLogin, gl.project.list]},
+    {url: '/api/project/edit', handles: [gl.right.needLogin, gl.project.edit]}
 ];
+
+
 function before(req, res, next) {
     req.data = req.method == 'GET' ? req.query : req.body;
     delete req.data.__proto__;
@@ -40,10 +42,5 @@ for (var i = 0; i < routes.length; i++) {
     })(routes[i]);
 }
 app.use(express.static(__dirname + '/../public'));
-app.use(function (req, res) {
-    res.json({
-        code: 404,
-        message: 'not found!'
-    })
-});
+app.use(function (req, res) {gl.error(res,404);});
 app.listen();
