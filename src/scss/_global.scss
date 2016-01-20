@@ -14,6 +14,10 @@ input[type=checkbox] {
 input, textarea {
   width: 98%;
   border: 1px solid #ccc;
+  padding: 5px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
   -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
 }
 
@@ -36,7 +40,13 @@ textarea {
     float: left;
     border-right: 1px solid #ccc;
     margin: 0;
-    padding: 14px 0 0 10px;
+    padding: 5px 5px 20px 0;
+    .type {
+      margin-top: 14px;
+      color: #fff;
+      background: #666;
+      padding-left: 10px;
+    }
     ul {
       padding: 0;
       margin: 0;
@@ -45,10 +55,32 @@ textarea {
         list-style: none;
         @extend .one-line;
         display: block;
+        a {
+          display: block;
+          color: #333;
+          text-decoration: none;
+          padding-left: 10px;
+          &:hover {
+            background: #129FEA;
+            color: #fff;
+            text-decoration: none;
+          }
+          &.active {
+            background: #3276b1;
+            color: #fff;
+          }
+        }
+
       }
     }
   }
   & > .main {
     margin: 10px 10px 10px 160px;
   }
+}
+
+.loading {
+  font-size: 24px;
+  text-align: center;
+  display: none;
 }

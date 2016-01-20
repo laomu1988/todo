@@ -8,7 +8,7 @@
     已删除
 
     -->
-    <div>新建</div>
+    <div class="type">新建</div>
     <ul>
         <li><a href="javascript:void(0)" onclick="{web.new_todo}"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li>
         <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i>
@@ -16,35 +16,42 @@
         <!--<li><a href="javascript:void(0)" onclick="{web.new_group}"><i class="glyphicon glyphicon-list-alt"></i> 新群组</a>
         </li>-->
     </ul>
-    <div>查看</div>
+    <div class="type">查看</div>
     <ul>
         <li>
-            <a href="#method=todo"><i class="glyphicon glyphicon-star"></i> 今日待办</a></li>
-        <li><i class="glyphicon glyphicon-calendar"></i> 日历</li>
+            <a href="#method=todo" class="{active: method == 'todo'}"><i class="glyphicon glyphicon-star"></i> 今日待办</a>
+        </li>
+        <li>
+            <a href="javascript:void(0)"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li>
     </ul>
-    <div if="{projects && projects.length > 0}">项目</div>
+    <div if="{projects && projects.length > 0}" class="type">项目</div>
     <ul>
         <li each="{projects}">
-            <a href="#method=project&project={objectId}" ondragover="{web.ondragover}" ondrop="{web.ondrop}"
-               method="project"
+            <a href="#method=project&project={objectId}"
+               ondragover="{web.ondragover}" ondrop="{web.ondrop}"
+               method="project" class="{active: method == 'project' && web._hashs.project == objectId}"
                ondragstart="{web.ondrag}"
                draggable="true" project_id="{objectId}"><i
                     class="glyphicon glyphicon-list"></i> {name}</li>
         </a>
     </ul>
-    <div>状态</div>
+    <div class="type">状态</div>
     <ul>
         <li>
-            <a href="#method=finished" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="finished"><i
+            <a href="#method=finished" ondragover="{web.ondragover}" ondrop="{web.ondrop}"
+               method="finished" class="{active: method == 'finished'}"><i
                     class="glyphicon glyphicon-ok"></i> 已完成</a></li>
         <li>
-            <a href="#method=removed" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="removed"><i
+            <a href="#method=removed" ondragover="{web.ondragover}" ondrop="{web.ondrop}"
+               method="removed" class="{active: method == 'removed'}"><i
                     class="glyphicon glyphicon-trash"></i> 已删除</a></li>
     </ul>
     <script>
         var self = this;
+        self.method = web._hashs.method || 'todo';
         self.projects = [];
         self.updateMenu = function () {
+            self.method = web._hashs.method || 'todo';
             web.services.project.list(function (data) {
                 if (data && data.data && data.data.results) {
                     self.projects = data.data.results;
@@ -56,5 +63,6 @@
         web.on('update', function () {
             self.updateMenu();
         });
+        riot.route(self.updateMenu);
     </script>
 </menu>
