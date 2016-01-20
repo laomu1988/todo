@@ -2,6 +2,7 @@ var errors = [
     {code: 401, sign: 'need_login', message: '需要登录！'},
     {code: 402, sign: 'need_right', message: '没有权限查看该页面！'},
     {code: 404, sign: 'not_found', message: '没有找到该页面！'},
+    {code: 400, sign: 'unknown', message: '请求参数错误！'},// 自定义错误类别
     {code: 500, sign: 'error', message: '未知错误！'},
 ];
 var codes = {};
@@ -16,8 +17,7 @@ gl.error = function (res, sign) {
     if (error) {
         res.json({code: error.code, message: error.message});
     } else {
-        console.log("未知错误：" + sign);
-        res.json({code: 500, error: '未知错误！'});
+        res.json({code: 500, message: sign});
     }
 };
 /**

@@ -13,6 +13,13 @@ module.exports = {
             removed: 'boolean'//是否删除
         }, false);
     },
+    get: function (req, res) {
+        if (req.data.id) {
+            gl.sendById('Todo', req.data.id, res);
+        } else {
+            res.json({});
+        }
+    },
     new: function (req, res) {
         var data = req.data;
         var d = gl.todo.transfer(data);
@@ -59,7 +66,9 @@ module.exports = {
         delete data.id;
         delete data.user;
         var data = gl.todo.transfer(data);
-        var sql = 'update Todo set where id = ';
+        if (!id) {
+            gl.error(res, 'unkonwn');
+        }
         // todo： 优化为update语句，只修改有权限的
         gl.editCondition('Todo', id, function (result) {
             if (result) {

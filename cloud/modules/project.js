@@ -1,3 +1,4 @@
+var gl = global.gl;
 module.exports = {
     // 转换data类型到Todo
     transfer: function (data) {

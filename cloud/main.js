@@ -10,19 +10,9 @@ app.use(express.cookieParser());
 app.use(express.cookieSession({secret: 'todo2015', name: 'todo', cookie: {maxAge: 60 * 60 * 1000}})); // session
 
 
-var routes = [
-    {url: '/api/user/signup', handles: [gl.user.new], method: 'all'},
-    {url: '/api/user/login', handles: [gl.user.login]},
-    {url: '/api/todo/new', handles: [gl.right.needLogin, gl.todo.new]},
-    {url: '/api/todo/list', handles: [gl.right.needLogin, gl.todo.list]},
-    {url: '/api/todo/edit', handles: [gl.right.needLogin, gl.todo.edit]},
-    {url: '/api/todo/unfinish', handles: [gl.right.needLogin, gl.todo.unfinish]},
-    {url: '/api/project/new', handles: [gl.right.needLogin, gl.project.new]},
-    {url: '/api/project/list', handles: [gl.right.needLogin, gl.project.list]},
-    {url: '/api/project/edit', handles: [gl.right.needLogin, gl.project.edit]}
-];
+var routes = require('cloud/routes.js');
 
-
+// 每次处理程序之前，都增加转换
 function before(req, res, next) {
     req.data = req.method == 'GET' ? req.query : req.body;
     delete req.data.__proto__;
@@ -30,6 +20,7 @@ function before(req, res, next) {
     console.log('before', JSON.stringify(req.data));
     next();
 }
+// 路由处理部分
 for (var i = 0; i < routes.length; i++) {
     (function (route) {
         var method = route.method || 'all';
@@ -42,5 +33,7 @@ for (var i = 0; i < routes.length; i++) {
     })(routes[i]);
 }
 app.use(express.static(__dirname + '/../public'));
-app.use(function (req, res) {gl.error(res,404);});
+app.use(function (req, res) {
+    gl.error(res, 404);
+});
 app.listen();
