@@ -9,7 +9,6 @@
     </div>
     <script>
         var self = this;
-        console.log(self.opts);
         self.finish_todo = function (e) {
             var id = e.target.getAttribute('todo_id');
             var services = e.target.checked ? web.services.todo.finish : web.services.todo.unfinish;

@@ -13,7 +13,7 @@
     <div class="children">
 
     </div>
-    <div class="">状态</div>
+    <div class="">子任务，时间，状态</div>
     <div class="bottom">
         <div class="btn btn-cancel" onclick="{cancel}">取消</div>
         <div class="btn btn-primary" onclick="{submit}">确定</div>
@@ -47,6 +47,7 @@
                 if (data && data.code == 0) {
                     web.message(action + '成功！');
                     self.cancel();
+                    history.go(0);
                 } else {
                     web.errmsg(data, action + '失败！');
                 }
