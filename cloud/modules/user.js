@@ -6,15 +6,12 @@ module.exports = {
     login: function (req, res) {
         var data = req.data;
         console.log('用户尝试登录：', data.username);
-        console.log(gl.send);
-        var ret = gl.send(res, function (data) {
+        gl.AV.User.logIn(data.username, data.password, gl.send(res, function (data) {
             data = JSON.parse(JSON.stringify(data));
             console.log('用户登录成功：', data.username);
             req.session.user = data;
-        });
-        gl.AV.User.logIn(data.username, data.password, ret)
-    }
-    ,
+        }))
+    },
     isLogin: function (req) {
         var user = req.session.user;
         if (user && user.objectId) {
@@ -23,8 +20,7 @@ module.exports = {
         }
         console.log('还未登录');
         return null;
-    }
-    ,
+    },
     isAdmin: function () {
 
     },
@@ -32,7 +28,9 @@ module.exports = {
         //console.log('myRef:', req.session.user.objectId);
         return gl.withId('User', req.session.user.objectId);
     },
-    logout: function (res) {
-
+    logout: function (req, res) {
+        gl.AV.User.logOut();
+        req.session.user = null;
+        res.send({code: 0, message: '退出登录成功！'});
     }
 };
