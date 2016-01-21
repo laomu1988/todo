@@ -54,7 +54,7 @@ var validateRules = {
         return (/^[\w\d_]*$/).test(val) ? false : '格式错误！';
     },
     nickname: function (val) {
-        if (val && val.indexOf('@' >= 0)) {
+        if (val && val.indexOf('@') >= 0) {
             return validateRules.email(val);
         }
         return (/^[\w\d_\u4e00-\u9fa5]*$/).test(val) ? false : '格式错误！';

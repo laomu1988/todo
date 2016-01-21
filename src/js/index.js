@@ -1,11 +1,11 @@
 $(function () {
     var loading = $('.loading');
 
-    function showList(result, msg) {
-        loading.hide();
+    function showList(template, result, msg) {
         msg = msg || '加载失败！';
+        loading.hide();
         if (result && result.code == 0) {
-            riot.mount('todo_list', result.data);
+            riot.mount('view', template, result.data);
         }
         else {
             web.message((result && result.message) || msg);
@@ -18,23 +18,23 @@ $(function () {
         switch (method) {
             case 'project':
                 web.services.todo.list({project: web._hashs.project}, function (result) {
-                    showList(result, '加载失败！');
+                    showList('todo_list', result);
                 });
                 break;
             case 'finished':
                 web.services.todo.list({finished: true}, function (result) {
-                    showList(result, '加载失败！');
+                    showList('todo_list', result);
                 });
                 break;
             case 'removed':
                 web.services.todo.list({removed: true}, function (result) {
-                    showList(result, '加载失败！');
+                    showList('removed', result);
                 });
                 break;
             case 'todo':
             default:
                 web.services.todo.list(function (result) {
-                    showList(result, '加载失败！');
+                    showList('removed', result);
                 });
                 break;
         }

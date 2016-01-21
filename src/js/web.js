@@ -31,7 +31,7 @@ web.new_project = function () {
 web.finish = function (e) {
     var target = e.currentTarget || e.target || e;
     if (target.getAttribute) {
-        var check = target.checked, type = target.getAttribute('o_type');
+        var check = target.checked, type = target.getAttribute('o_type') || 'todo';
         var services = web.services[type][!check ? 'unfinish' : 'finish'];
         services(target.getAttribute('o_id'), function (data) {
             if (data && data.code == 0) {
@@ -47,4 +47,20 @@ web.finish = function (e) {
         console.error('web.finish参数错误！');
     }
     return false;
+};
+
+web.edit = function (e) {
+    var target = e.currentTarget || e.target || e;
+    if (target.getAttribute) {
+        var type = target.getAttribute('o_type') || 'todo';
+        web.services[type].get(target.getAttribute('o_id'), function (result) {
+            if (result && result.code == 0 && result.data) {
+                web.dialog('edit', {title: type == 'todo' ? '任务详情' : '项目详情', type: type, data: result.data});
+            } else {
+                web.errmsg(result, '未找到内容！')
+            }
+        });
+    } else {
+        console.error('web.edit参数错误！');
+    }
 };

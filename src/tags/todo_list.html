@@ -13,21 +13,21 @@
         }
     </style>
     <div if="{project}">
-        <div class="name">
+        <div class="name {'removed': project.removed}">
             <input type="checkbox" value="" onclick="{web.finish}" o_type="project" o_id={project.objectId}
                    checked="{project.finish}">
-            <span onclick="{edit}" o_id="{project.objectId}" o_type="project">{project.name}</span>
+            <span onclick="{web.edit}" o_id="{project.objectId}" o_type="project">{project.name}</span>
         </div>
-        <div class="detail" if={project.detail} onclick="{edit}" o_id="{project.objectId}" o_type="project">
+        <div class="detail" onclick="{web.edit}" o_id="{project.objectId}" o_type="project">
             {project.detail}
         </div>
     </div>
 
     <div riot-tag="todo_new"></div>
     <div each="{opts.results}" draggable="true" o_type="todo" o_id="{objectId}" ondragstart="{web.ondrag}"
-         name="{name}">
+         name="{name}" class="todo {'removed':removed}">
         <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId} checked="{finish}"><span
-            onclick="{edit}">{name}</span>
+            onclick="{web.edit}" o_type="todo" o_id="{objectId}">{name}</span>
     </div>
     <script>
         var self = this;
@@ -47,21 +47,6 @@
                 web.message('新任务内容为空！');
             }
         });
-        self.edit = function (e) {
-            var target = e.currentTarget || e.target;
-            var id = target.getAttribute('o_id'), type = target.getAttribute('o_type') || 'todo';
-            if (id && type == 'todo') {
-                web.services.todo.get(id, function (result) {
-                    if (result && result.code == 0 && result.data) {
-                        web.dialog('edit', {title: '任务详情', type: 'todo', data: result.data});
-                    } else {
-                        web.errmsg(result, '未找到任务！')
-                    }
-                });
-            } else if (type == 'project') {
-                web.dialog('edit', {title: '任务详情', type: 'project', data: self.project});
-            }
-        };
     </script>
 </todo_list>
 
