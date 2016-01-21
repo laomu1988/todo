@@ -38,8 +38,44 @@ gl.extend(gl, {
     clearData: function (data) {
         return JSON.parse(JSON.stringify(data));
     },
-    find: function (sql, success, error) {
-        AV.Query.doCloudQuery(sql, {success: success, error: error});
+    findFirst: function (data, callback, error) {
+        if (typeof data == 'object' && data.class) {
+            var query = new gl.AV.Query(data.class);
+            var equalValue = ['username', 'email'];
+            for (var i = equalValue.length - 1; i >= 0; i--) {
+                var attr = data[equalValue[i]];
+                if (typeof data[attr] != 'undefined') {
+                    query.equalTo(attr, data[attr]);
+                }
+            }
+            query.first({success: callback, error: error});
+        } else {
+            console.error('gl.find参数格式错误！', data);
+        }
+    },
+    find: function (data, callback, error) {
+        if (typeof data == 'string') {
+            AV.Query.doCloudQuery(data, {success: callback, error: error});
+        }
+        else if (typeof data == 'object' && data.class) {
+            var query = new gl.AV.Query(data.class);
+            var equalValue = ['username', 'email'];
+            for (var i = equalValue.length - 1; i >= 0; i--) {
+                var attr = data[equalValue[i]];
+                if (typeof data[attr] != 'undefined') {
+                    query.equalTo(attr, data[attr]);
+                }
+            }
+            var pagesize = data.pagesize > 0 ? data.pagesize : 20;
+            var page = data.page > 0 ? data.page : 1;
+            if (page > 1) {
+                query.skip(page * pagesize - pagesize);
+            }
+            query.limit(pagesize);
+            query.find({success: callback, error: error});
+        } else {
+            console.error('gl.find参数格式错误！', data);
+        }
     },
     findAndSend: function (sql, res) {
         console.log('sql: ', sql);

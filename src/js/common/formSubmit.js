@@ -16,16 +16,6 @@ web.formSubmit = function (form, config) {
         web.message(result.message || result.error);
         return false;
     }
-
-    // 假如存在电话号码,则需要验证电话号码
-    var phone = form.find('input[name=phone]');
-    if (phone && phone.length > 0) {
-        var valid = form.find('input[validateCode]');
-        if (valid && valid.length > 0 && phone.val().trim() !== web._valid_phone) {
-            web.message("电话号码被更改，请重新获取验证码！");
-            return false;
-        }
-    }
     var data = web.formVal(form);
     if (typeof config.before === 'function') {
         if (!config.before(data)) {
@@ -36,8 +26,8 @@ web.formSubmit = function (form, config) {
         if (typeof config === 'function') {
             config(data);
         }
-        else if (config.services && web.services[config.services]) {
-            web.services[config.services](data, function (result) {
+        else if (config.services) {
+            config.services(data, function (result) {
                 console.log(result);
                 if (result && result.code == 0) {
                     if (config.callback) {

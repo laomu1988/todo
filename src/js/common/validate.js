@@ -90,7 +90,7 @@ var validateRules = {
     },
     nickname: {
         test: function (val) {
-            return (/^[\w\d_\u4e00-\u9fa5]*$/).test(val);
+            return (/^[\w\d_\u4e00-\u9fa5\@\.]*$/).test(val);
         },
         msg: '格式错误！'
     }
