@@ -16,30 +16,26 @@ web.ondrop = function (e) {
         return false;
     }
     var drag = web.__drag;
-    var name = drag.getAttribute('name'), id = drag.getAttribute('todo_id'), project_id = e.target.getAttribute('project_id');
+    var name = drag.getAttribute('name'), id = src['o_id'], type = src['o_type'] || 'todo';
     switch (data.method) {
         case 'project':
-            // 修改project
-            web.services.todo.edit({
-                id: src.todo_id,
-                project: data.project_id
-            }, function (data) {
-                if (data.code == 0) {
-                    web.message('修改成功！');
-                } else {
-                    web.message('修改失败！');
-                }
-            });
+            // 修改所在project
+            if (type == 'todo') {
+                web.services.todo.edit({
+                    id: id,
+                    project: data['o_id']
+                }, function (data) {
+                    if (data.code == 0) {
+                        web.message('修改成功！');
+                    } else {
+                        web.message('修改失败！');
+                    }
+                });
+            }
+
             break;
         case 'removed':
-            var services = null, id = null;
-            if (src.todo_id) {
-                id = src.todo_id;
-                services = web.services.todo.remove;
-            } else if (src.project_id) {
-                id = src.project_id;
-                services = web.services.project.remove;
-            }
+            var services = web.services[type].remove;
             if (services) {
                 services(id, function (data) {
                     if (data.code == 0) {
@@ -52,18 +48,12 @@ web.ondrop = function (e) {
             }
             break;
         case 'finished':
-            var services = null, id = null;
-            if (src.todo_id) {
-                id = src.todo_id;
-                services = web.services.todo.finish;
-            } else if (src.project_id) {
-                id = src.project_id;
-                services = web.services.project.finish;
-            }
+            var services = web.services[type].finish;
             if (services) {
                 services(id, function (data) {
                     if (data.code == 0) {
                         web.message('修改成功！');
+                        $(web.__drag).remove();
                     } else {
                         web.message('修改失败！');
                     }

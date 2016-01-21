@@ -19,6 +19,8 @@ module.exports = [
     {url: '/api/todo/edit', handles: [gl.right.needLogin, gl.todo.edit]},
     {url: '/api/todo/unfinish', handles: [gl.right.needLogin, gl.todo.unfinish]},
     {url: '/api/project/new', handles: [gl.right.needLogin, gl.project.new]},
+    {url: '/api/project/get', handles: [gl.right.needLogin, gl.project.get]},
     {url: '/api/project/list', handles: [gl.right.needLogin, gl.project.list]},
-    {url: '/api/project/edit', handles: [gl.right.needLogin, gl.project.edit]}
+    {url: '/api/project/edit', handles: [gl.right.needLogin, gl.project.edit]},
+    {url: '/api/project/unfinish', handles: [gl.right.needLogin, gl.project.unfinish]}
 ];

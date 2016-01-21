@@ -17,7 +17,7 @@ module.exports = {
         if (req.data.id) {
             gl.sendById('Todo', req.data.id, res);
         } else {
-            res.json({});
+            gl.error(res, 400);
         }
     },
     new: function (req, res) {

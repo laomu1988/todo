@@ -20,6 +20,13 @@ module.exports = {
             user: gl.user.myRef(req)
         }, res);
     },
+    get: function (req, res) {
+        if (req.data.id) {
+            gl.sendById('Project', req.data.id, res);
+        } else {
+            gl.error(res, 400);
+        }
+    },
     // project列表
     list: function (req, res) {
         console.log('list project');
@@ -51,6 +58,9 @@ module.exports = {
     edit: function (req, res) {
         var data = req.data;
         var id = data.id;
+        if (!id) {
+            return gl.error(res, 400);
+        }
         delete data.id;
         delete data.user;
         var data = gl.project.transfer(data);
@@ -64,4 +74,23 @@ module.exports = {
             return false;
         }, data, res);
     },
+    unfinish: function (req, res) {
+        var data = req.data;
+        var id = data.id;
+        if (!id) {
+            return gl.error(res, 400);
+        }
+        delete data.id;
+        delete data.user;
+        var data = gl.todo.transfer(data);
+        gl.editCondition('Project', id, function (result) {
+            if (result) {
+                var user = result.get('user');
+                if (user.id == req.session.user.objectId) {
+                    return true;
+                }
+            }
+            return false;
+        }, {finish: 0}, res);
+    }
 };

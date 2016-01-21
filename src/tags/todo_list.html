@@ -1,26 +1,44 @@
 <todo_list>
     <style>
+        .name {
+            font-weight: 700;
+            padding: 14px 0 5px 0px;
+            font-size: 18px;
+        }
+
+        .detail {
+            margin-left: 23px;
+            color: #666;
+            margin-bottom: 20px;
+        }
     </style>
+    <div if="{project}">
+        <div class="name">
+            <input type="checkbox" value="" onclick="{web.finish}" o_type="project" o_id={project.objectId}
+                   checked="{project.finish}">
+            <span onclick="{edit}" o_id="{project.objectId}" o_type="project">{project.name}</span>
+        </div>
+        <div class="detail" if={project.detail} onclick="{edit}" o_id="{project.objectId}" o_type="project">
+            {project.detail}
+        </div>
+    </div>
+
     <div riot-tag="todo_new"></div>
-    <div each="{opts.results}" draggable="true" o-type="todo" o-id="{objectId}" todo_id="{objectId}"
-         ondragstart="{web.ondrag}" name="{name}"
-         onclick="{edit}">
-        <input type="checkbox" value="" onclick="{finish_todo}" todo_id={objectId} checked="{finish}">{name}
+    <div each="{opts.results}" draggable="true" o_type="todo" o_id="{objectId}" ondragstart="{web.ondrag}"
+         name="{name}">
+        <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId} checked="{finish}"><span
+            onclick="{edit}">{name}</span>
     </div>
     <script>
         var self = this;
-        self.finish_todo = function (e) {
-            var id = e.target.getAttribute('todo_id');
-            var services = e.target.checked ? web.services.todo.finish : web.services.todo.unfinish;
-            services(id, function (data) {
-                if (data && data.code == 0) {
-                    web.message('操作成功！');
-                    $(e.target).parent().remove();
-                } else {
-                    web.message((data && data.message) || '操作失败！');
+        if (web._hashs.method == 'project') {
+            web.services.project.get(web._hashs.project, function (data) {
+                if (data && data.code == 0 && data.data) {
+                    self.project = data.data;
+                    self.update();
                 }
-            });
-        };
+            })
+        }
         web.on('new_todo', function (data) {
             if (data && data.objectId) {
                 self.opts.results.unshift(data);
@@ -30,8 +48,9 @@
             }
         });
         self.edit = function (e) {
-            var id = e.target.getAttribute('o-id');
-            if (id) {
+            var target = e.currentTarget || e.target;
+            var id = target.getAttribute('o_id'), type = target.getAttribute('o_type') || 'todo';
+            if (id && type == 'todo') {
                 web.services.todo.get(id, function (result) {
                     if (result && result.code == 0 && result.data) {
                         web.dialog('edit', {title: '任务详情', type: 'todo', data: result.data});
@@ -39,6 +58,8 @@
                         web.errmsg(result, '未找到任务！')
                     }
                 });
+            } else if (type == 'project') {
+                web.dialog('edit', {title: '任务详情', type: 'project', data: self.project});
             }
         };
     </script>
