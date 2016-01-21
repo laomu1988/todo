@@ -34,7 +34,7 @@ $(function () {
             case 'todo':
             default:
                 web.services.todo.list(function (result) {
-                    showList('removed', result);
+                    showList('todo_list', result);
                 });
                 break;
         }

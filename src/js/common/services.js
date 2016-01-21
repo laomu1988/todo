@@ -24,28 +24,18 @@ web.services = {
         edit: function (data, callback) {
             web.get('todo/edit', data, callback);
         },
-        finish: function (todoId, callback) {
-            web.services.todo.edit({
-                id: todoId,
-                finish: Date.now()
-            }, callback);
+        finish: function (id, callback) {
+            web.get('todo/finish', {id: id}, callback);
         },
-        unfinish: function (todoId, callback) {
-            web.get('todo/unfinish', {id: todoId}, callback);
+        unfinish: function (id, callback) {
+            web.get('todo/unfinish', {id: id}, callback);
         },
-        remove: function (todoId, callback) {
-            web.services.todo.edit({
-                id: todoId,
-                removed: true
-            }, callback);
+        remove: function (id, callback) {
+            web.get('todo/remove', {id: id}, callback);
         },
-        unremove: function (todoId, callback) {
-            web.services.todo.edit({
-                id: todoId,
-                removed: false
-            }, callback);
+        unremove: function (id, callback) {
+            web.get('todo/unremove', {id: id}, callback);
         }
-
     },
     project: {
         new: function (data, callback) {
@@ -61,25 +51,16 @@ web.services = {
             web.get('project/edit', data, callback);
         },
         finish: function (id, callback) {
-            web.services.project.edit({
-                id: id,
-                finish: Date.now()
-            }, callback);
+            web.get('project/finish', {id: id}, callback);
         },
         unfinish: function (id, callback) {
             web.get('project/unfinish', {id: id}, callback);
         },
-        remove: function (todoId, callback) {
-            web.services.project.edit({
-                id: todoId,
-                removed: true
-            }, callback);
+        remove: function (id, callback) {
+            web.get('project/remove', {id: id}, callback);
         },
-        unremove: function (todoId, callback) {
-            web.services.project.edit({
-                id: todoId,
-                removed: false
-            }, callback);
+        unremove: function (id, callback) {
+            web.get('project/unremove', {id: id}, callback);
         }
     }
 };

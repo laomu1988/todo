@@ -144,6 +144,9 @@ gl.extend(gl, {
      * */
     editCondition: function (className, objectId, conditionFunc, data, res) {
         console.log('editCondition');
+        if (!objectId) {
+            return gl.error(res, 400);
+        }
         gl.findById(className, objectId, function (result) {
             console.log('查询到结果：', JSON.stringify(result));
             if (conditionFunc(result)) {
@@ -158,6 +161,21 @@ gl.extend(gl, {
             console.log('查询出错！');
             res.json(err);
         });
+    },
+    // 修改我的数据
+    editMyData: function (className, objectId, data, user, res) {
+        if (!objectId) {
+            return gl.error(res, 400);
+        }
+        gl.editCondition(className, objectId, function (result) {
+            if (result) {
+                var datauser = result.get('user');
+                if (datauser && datauser.id == user.objectId) {
+                    return true;
+                }
+            }
+            return false;
+        }, data, res);
     },
     /**转换数据类型*/
     transferData: function (data, typeArray, keep) {

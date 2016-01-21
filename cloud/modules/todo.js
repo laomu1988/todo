@@ -66,9 +66,6 @@ module.exports = {
         delete data.id;
         delete data.user;
         var data = gl.todo.transfer(data);
-        if (!id) {
-            gl.error(res, 'unkonwn');
-        }
         // todo： 优化为update语句，只修改有权限的
         gl.editCondition('Todo', id, function (result) {
             if (result) {
@@ -80,22 +77,16 @@ module.exports = {
             return false;
         }, data, res);
     },
+    finish: function (req, res) {
+        gl.editMyData('Todo', req.data.id, {finish: Date.now()},req.session.user, res);
+    },
     unfinish: function (req, res) {
-        var data = req.data;
-        var id = data.id;
-        delete data.id;
-        delete data.user;
-        var data = gl.todo.transfer(data);
-        var sql = 'update Todo set where id = ';
-        // todo： 优化为update语句，只修改有权限的
-        gl.editCondition('Todo', id, function (result) {
-            if (result) {
-                var user = result.get('user');
-                if (user.id == req.session.user.objectId) {
-                    return true;
-                }
-            }
-            return false;
-        }, {finish: 0}, res);
+        gl.editMyData('Todo', req.data.id, {finish: 0},req.session.user, res);
+    },
+    remove: function (req, res) {
+        gl.editMyData('Todo', req.data.id, {removed: true},req.session.user, res);
+    },
+    unremove: function (req, res) {
+        gl.editMyData('Todo', req.data.id, {removed: false},req.session.user, res);
     }
 };
