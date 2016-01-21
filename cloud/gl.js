@@ -1,6 +1,7 @@
 global.gl = global.gl || {};
 require('cloud/modules/_gl.js');
 require('cloud/modules/error.js');
+gl.validate = require('cloud/modules/validate.js');
 gl.user = require('cloud/modules/user.js');
 gl.right = require('cloud/modules/right.js');
 gl.project = require('cloud/modules/project.js');

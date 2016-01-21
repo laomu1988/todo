@@ -5,7 +5,8 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true" onclick="{unmount}">&times;</span></button>
-                    <h4 class="modal-title">登录</h4>
+                    <h4 class="modal-title">用户登录(<a href="javascript:void(0)" onclick="{register}">还没有账号，点击注册</a>)
+                    </h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -29,16 +30,22 @@
         self.login = function () {
             var form = $(self.root);
             web.formSubmit(form, {
-                services: 'login',
+                services: web.services.user.login,
                 callback: function (data) {
                     if (data && data.code == 0 && data.data.username) {
                         web.setCookie('user', data.data);
+                        web.message('登录成功！');
                         $(self.root).find('.modal').modal('hide');
                         self.unmount();
                         web.trigger('update');
                     }
                 }
             });
+        };
+        self.register = function () {
+            $(self.root).find('.modal').modal('hide');
+            self.unmount();
+            web.mount('register');
         };
         self.on('mount', function () {
             $(self.root).find('.modal').modal();

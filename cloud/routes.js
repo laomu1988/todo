@@ -9,7 +9,7 @@ var gl = global.gl;
  */
 module.exports = [
     // 用户
-    {url: '/api/user/signup', handles: [gl.user.new], method: 'all'},
+    {url: '/api/user/register', handles: [gl.user.new], method: 'all'},
     {url: '/api/user/login', handles: [gl.user.login]},
     {url: '/api/user/logout', handles: [gl.user.logout]},
 

@@ -5,7 +5,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true" onclick="{unmount}">&times;</span></button>
-                    <h4 class="modal-title">注册</h4>
+                    <h4 class="modal-title">注册(<a href="javascript:void(0)" onclick="{login}">已有账号，点击登录</a>)</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -25,23 +25,34 @@
                         <input type="password" class="form-control" id="password2" name="password2" placeholder="请输入密码">
                     </div>
 
-                </div> <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" onclick="{login}">注册</button>
-                    <button type="button" class="btn btn-seconary">已有账号</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-seconary" onclick="{cancel}">取消</button>
+                    <button type="submit" class="btn btn-primary" onclick="{register}">注册</button>
                 </div>
             </div>
         </div>
     </div>
     <script>
         var self = this;
-        self.login = function () {
+        self.register = function () {
             var form = $(self.root);
             web.formSubmit(form, {
-                services: 'login',
+                services: web.services.user.register,
                 callback: function (data) {
-                    console.log(data);
+                    if (data && data.code == 0) {
+                        web.alert('注册成功，请到邮箱查看并激活账号！');
+                    }
                 }
             });
+        };
+        self.cancel = function () {
+            $(self.root).find('.modal').modal('hide');
+            self.unmount();
+        };
+        self.login = function () {
+            self.cancel();
+            web.mount('login');
         };
         self.on('mount', function () {
             $(self.root).find('.modal').modal();

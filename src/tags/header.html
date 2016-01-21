@@ -18,10 +18,11 @@
             web.mount('login');
         };
         self.logout = function () {
-            web.services.logout(function () {
+            web.services.user.logout(function () {
                 self.user = web.getUser();
                 self.isLogin = !!self.user;
                 self.update();
+                web.trigger('update');
             });
         };
 

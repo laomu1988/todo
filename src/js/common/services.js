@@ -1,10 +1,15 @@
 web.services = {
-    login: function (data, callback) {
-        web.get('user/login', data, callback);
-    },
-    logout: function (data, callback) {
-        web.setCookie('user', '');
-        web.get('user/logout', data, callback);
+    user: {
+        register: function (data, callback) {
+            web.post('user/register', data, callback);
+        },
+        login: function (data, callback) {
+            web.get('user/login', data, callback);
+        },
+        logout: function (data, callback) {
+            web.setCookie('user', '');
+            web.get('user/logout', data, callback);
+        }
     },
     todo: {
         new: function (data, callback) {
