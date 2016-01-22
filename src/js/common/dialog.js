@@ -3,9 +3,12 @@ web.dialog = function (tag, data) {
     return riot.mount(dom[0], 'dialog', {tag: tag, data: data});
 };
 
+web.confirm = function (message, callback, quit) {
+    return web.dialog('', {type: 'confirm', title: '请确认', message: message, callback: callback, quit: quit})
+};
 
-web.alert = function (message) {
-    return web.mount('alert', {message: message})
+web.alert = function (message, callback) {
+    return web.dialog('', {type: 'alert', title: '提示消息', message: message, callback: callback})
 };
 
 web.message = function (message) {

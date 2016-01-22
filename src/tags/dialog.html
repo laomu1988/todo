@@ -13,7 +13,11 @@
                             aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="mySmallModalLabel" if="{opts.data.title}">{opts.data.title}</h4>
                 </div>
-                <div class="modal-body riot-tag">
+                <div class="modal-body">{opts.data.message}
+                </div>
+                <div class="modal-footer" if="{hasBtn}">
+                    <button type="button" class="btn btn-seconary" if="{quit}" onclick="{quit}">取消</button>
+                    <button type="submit" class="btn btn-primary" onclick="{callback}">确定</button>
                 </div>
             </div>
         </div>
@@ -22,14 +26,37 @@
         var self = this;
         self.hide = function () {
             $(self.root).find('.modal').modal('hide');
-        };
-        self.on('mount', function () {
-            if (!self.opts.data) {
-                self.opts.data = {};
+            if (typeof self.opts.data.quit == 'function' && !self.callback) {
+                self.opts.data.quit();
             }
-            self.opts.data.hide = self.opts.data.hide || self.hide;
-            var tag = $(self.root).find('.riot-tag')[0];
-            riot.mount(tag, opts.tag, opts.data);
+            setTimeout(self.unmount, 300);
+        };
+        var type = self.opts.data.type;
+        if (type == 'alert' || type == 'confirm') {
+            self.opts.tag = '';
+            self.hasBtn = true;
+            if (type == 'confirm') {
+                self.quit = function () {
+                    self.hide();
+                }
+            }
+            self.callback = function () {
+                self.hide();
+                if (self.opts.data.callback) {
+                    self.opts.data.callback();
+                }
+            }
+        }
+
+        self.on('mount', function () {
+            if (self.opts.tag) {
+                if (!self.opts.data) {
+                    self.opts.data = {};
+                }
+                self.opts.data.hide = self.opts.data.hide || self.hide;
+                var tag = $(self.root).find('.modal-body')[0];
+                riot.mount(tag, opts.tag, opts.data);
+            }
             $(self.root).find('.modal').modal();
         });
     </script>
