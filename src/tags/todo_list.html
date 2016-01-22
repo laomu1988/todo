@@ -26,11 +26,12 @@
     <div riot-tag="todo_new"></div>
     <div each="{opts.results}" o_type="todo" o_id="{objectId}" draggable="true"  ondragstart="{web.ondrag}"
          name="{name}" class="todo {'removed':removed}">
-        <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId} checked="{finish}"><span
+        <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId}  checked="{finish < now && finish != 0}"><span
             onclick="{web.edit}" o_type="todo" o_id="{objectId}">{name}</span>
     </div>
     <script>
         var self = this;
+        self.now = Date.now();
         if (web._hashs.method == 'project') {
             web.services.project.get(web._hashs.project, function (data) {
                 if (data && data.code == 0 && data.data) {

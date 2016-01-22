@@ -3,6 +3,18 @@
         .name { margin-bottom: 10px; }
 
         .bottom { text-align: right; }
+
+        .children input[type=checkbox] {
+            float: left;
+        }
+
+        .children .child-input {
+            margin-left: 20px;
+        }
+
+        .children .child-input input {
+            border: 0;
+        }
     </style>
     <div class="name">
         <input type="text" name="name" placeholder="任务名称" value="{opts.data.name}">
@@ -11,9 +23,17 @@
         <textarea type="text" name="detail" placeholder="任务详情">{opts.data.detail}</textarea>
     </div>
     <div class="name">子任务：</div>
-    <div class="children" if="{type == 'todo' && opts.data.name}">
-        <input each="{children}" type="text" value="{name}" o_id="{objectId}" o_type="todo" onkeyup="{keyup}">
-        <input type="text" value="" placeholder="输入后回车添加子任务" onkeyup="{keyup}"/>
+    <div class="children" if="{opts.data.name}">
+        <div each="{children}">
+            <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId} checked="{finish < now && finish != 0}">
+
+            <div class="child-input">
+                <input type="text" value="{name}" o_id="{objectId}" o_type="todo" onkeyup="{keyup}">
+            </div>
+        </div>
+        <div>
+            <input type="text" value="" placeholder="输入后回车添加子任务" onkeyup="{keyup}"/>
+        </div>
     </div>
     <div class="">子任务，时间，状态</div>
     <div class="bottom">
@@ -24,6 +44,7 @@
     <script>
         var self = this;
         self.isEdit = !!self.opts.data && !!self.opts.data.objectId;
+        self.now = Date.now();
         if (self.isEdit) {
             self.id = self.opts.data.objectId;
         }
@@ -31,7 +52,7 @@
         if (self.isEdit) {
             web.services.todo.list({pid: self.id}, function (result) {
                 if (result && result.code == 0 && result.data) {
-                    self.children = result.data.result;
+                    self.children = self.children.concat(result.data.results);
                     self.update();
                 }
             });

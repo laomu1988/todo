@@ -40,18 +40,22 @@ module.exports = {
         }
         if (data.pid) {
             sql += ' and pid = pointer("Todo","' + data.pid + '")';
+        } else {
+            sql += ' and pid is not exists';
         }
+
         if (data.removed + '' == 'true') {
             // 已经删除的任务
             sql += ' and removed > 0';
-        } else if (data.finished + '' == 'true') {
-            // 已经完成的任务
-            sql += ' and removed = 0 and finish >= 1 and finish < ' + Date.now();
-        } else if (data.finished != 'all') {
-            // 未完成的任务
-            sql += ' and removed = 0 and ( finish = 0 or finish > ' + Date.now() + ')';
         } else {
-            sql += ' and removed = 0 ';
+            // 已经完成的任务
+            sql += ' and removed = 0';
+        }
+
+        if (data.finished == 'true') {
+            sql += ' and finish >= 1 and finish < ' + Date.now();
+        } else if (data.finished == 'false') {
+            sql += ' and ( finish = 0 or finish > ' + Date.now() + ')';
         }
 
         // 某一个时间节点之间的任务
