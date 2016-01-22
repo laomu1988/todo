@@ -36,7 +36,7 @@ web.finish = function (e) {
         services(target.getAttribute('o_id'), function (data) {
             if (data && data.code == 0) {
                 web.message('操作成功！');
-                if (type == 'todo') {
+                if (type == 'todo' && !target.getAttribute('keep')) {
                     $(e.target).parent().remove();
                 }
             } else {

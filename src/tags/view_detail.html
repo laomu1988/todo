@@ -1,0 +1,51 @@
+<view_detail>
+    <style>
+        .name {
+            font-weight: 700;
+            padding: 14px 0 5px 0px;
+            font-size: 18px;
+        }
+
+        .detail {
+            margin-left: 23px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+    <div if="{opts.objectId}">
+        <div class="name {'removed': project.removed}" o_type="project" o_id={opts.objectId} draggable="true"
+             ondragstart="{web.ondrag}">
+            <input type="checkbox" value="" onclick="{web.finish}" o_type="project" o_id={opts.objectId}
+                   checked="{opts.finish > 0 && opts.finish > 0}">
+            <span onclick="{web.edit}" o_id="{opts.objectId}" o_type="project">{project.name}</span>
+        </div>
+        <div class="detail" onclick="{web.edit}" o_id="{opts.objectId}" o_type="project">
+            {opts.detail}
+        </div>
+    </div>
+
+    <div riot-tag="todo_new" o-id="" o-type=""></div>
+    <div class="list">
+        <loading></loading>
+    </div>
+    <script>
+        var self = this;
+        self.now = Date.now();
+        console.log(self.opts);
+        if (web._hashs.method == 'project') {
+            web.services.project.get(web._hashs.project, function (data) {
+                if (data && data.code == 0 && data.data) {
+                    self.project = data.data;
+                    self.update();
+                }
+            })
+        }
+        web.services.todo.list({project: web._hashs.project, finished: false}, function (result) {
+            if (result && result.code == 0 && result.data) {
+                self.list = result.data.results;
+                riot.mount(self.root.querySelector('.list'), 'todo_list', {list: self.list});
+                self.update();
+            }
+        });
+    </script>
+</view_detail>

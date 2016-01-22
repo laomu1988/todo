@@ -17,12 +17,15 @@ $(function () {
         loading.show();
         switch (method) {
             case 'project':
-                web.services.todo.list({project: web._hashs.project}, function (result) {
-                    showList('todo_list', result);
+                web.services.project.get(web._hashs.project, function (result) {
+                    if (result && result.data) {
+                        result.data.type = 'project';
+                    }
+                    showList('view_detail', result);
                 });
                 break;
             case 'finished':
-                web.services.todo.list({finished: true}, function (result) {
+                web.services.todo.list({finished: true, order: 'finish'}, function (result) {
                     showList('todo_list', result);
                 });
                 break;
