@@ -13,7 +13,7 @@
         }
     </style>
     <div if="{project}">
-        <div class="name {'removed': project.removed}">
+        <div class="name {'removed': project.removed}"  o_type="project" o_id={project.objectId} draggable="true"  ondragstart="{web.ondrag}">
             <input type="checkbox" value="" onclick="{web.finish}" o_type="project" o_id={project.objectId}
                    checked="{project.finish}">
             <span onclick="{web.edit}" o_id="{project.objectId}" o_type="project">{project.name}</span>
@@ -24,7 +24,7 @@
     </div>
 
     <div riot-tag="todo_new"></div>
-    <div each="{opts.results}" draggable="true" o_type="todo" o_id="{objectId}" ondragstart="{web.ondrag}"
+    <div each="{opts.results}" o_type="todo" o_id="{objectId}" draggable="true"  ondragstart="{web.ondrag}"
          name="{name}" class="todo {'removed':removed}">
         <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId} checked="{finish}"><span
             onclick="{web.edit}" o_type="todo" o_id="{objectId}">{name}</span>

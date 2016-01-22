@@ -1,0 +1,88 @@
+<edit_todo>
+    <style>
+        .name { margin-bottom: 10px; }
+
+        .bottom { text-align: right; }
+    </style>
+    <div class="name">
+        <input type="text" name="name" placeholder="任务名称" value="{opts.data.name}">
+    </div>
+    <div>
+        <textarea type="text" name="detail" placeholder="任务详情">{opts.data.detail}</textarea>
+    </div>
+    <div class="name">子任务：</div>
+    <div class="children" if="{type == 'todo' && opts.data.name}">
+        <input each="{children}" type="text" value="{name}" o_id="{objectId}" o_type="todo" onkeyup="{keyup}">
+        <input type="text" value="" placeholder="输入后回车添加子任务" onkeyup="{keyup}"/>
+    </div>
+    <div class="">子任务，时间，状态</div>
+    <div class="bottom">
+        <div class="btn btn-cancel" onclick="{cancel}">取消</div>
+        <div class="btn btn-primary" onclick="{submit}">确定</div>
+    </div>
+
+    <script>
+        var self = this;
+        self.isEdit = !!self.opts.data && !!self.opts.data.objectId;
+        if (self.isEdit) {
+            self.id = self.opts.data.objectId;
+        }
+        self.children = [];
+        if (self.isEdit) {
+            web.services.todo.list({pid: self.id}, function (result) {
+                if (result && result.code == 0 && result.data) {
+                    self.children = result.data.result;
+                    self.update();
+                }
+            });
+        }
+
+
+        self.cancel = function () {
+            if (self.opts.hide) {
+                self.opts.hide();
+            }
+            self.unmount();
+        };
+        self.submit = function () {
+            var data = {
+                name: self.name.value,
+                detail: self.detail.value
+            };
+            var server = web.services.todo, action = '新建';
+            if (self.isEdit) {
+                data.id = self.id;
+                server = server.edit;
+                action = '修改';
+            } else {
+                server = server.new;
+            }
+            server(data, function (data) {
+                if (data && data.code == 0) {
+                    web.message(action + '成功！');
+                    self.cancel();
+                    history.go(0);
+                } else {
+                    web.errmsg(data, action + '失败！');
+                }
+            });
+        };
+        self.keyup = function (e) {
+            if (e && e.keyCode == 13) {
+                var value = e.target.value;
+                console.log('新建子任务：', value);
+                if (value) {
+                    web.services.todo.new({name: value, pid: self.id}, function (result) {
+                        if (result && result.code == 0) {
+                            web.message('新建子任务成功!');
+                            self.children.push(result.data);
+                            self.update();
+                        }
+                    });
+                } else {
+                    web.message('子项目内容不能为空！');
+                }
+            }
+        }
+    </script>
+</edit_todo>

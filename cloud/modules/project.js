@@ -33,16 +33,16 @@ module.exports = {
         var data = req.data;
         var sql = "select count(*),* from Project where user = pointer('_User','" + req.session.user.objectId + "')";
 
+
         if (data.removed + '' == 'true') {
             // 已经删除的项目
-            sql += ' and removed = true';
+            sql += ' and removed > 0';
         } else if (data.finished + '' == 'true') {
             // 已经完成的项目
-            sql += ' and removed = false and finish is exists and finish != 0 and finish < ' + Date.now();
+            sql += ' and removed = false and finish != 0 and finish < ' + Date.now();
         } else if (data.finished != 'all') {
             // 未完成的项目
-            sql += ' and removed = false';
-            //sql += ' and removed = false and ( finish is not exists or finish = 0 or finish > ' + Date.now() + ')';
+            sql += ' and removed = 0 and (finish = 0 or finish > ' + Date.now() + ')';
         }
         // 某一个时间节点之间的任务
         if (data.begin && data.finish) {
@@ -81,9 +81,10 @@ module.exports = {
         gl.editMyData('Project', req.data.id, {finish: 0}, req.session.user, res);
     },
     remove: function (req, res) {
-        gl.editMyData('Project', req.data.id, {removed: true}, req.session.user, res);
+        gl.editMyData('Project', req.data.id, {removed: Date.now()}, req.session.user, res);
     },
     unremove: function (req, res) {
-        gl.editMyData('Project', req.data.id, {removed: false}, req.session.user, res);
+        gl.editMyData('Project', req.data.id, {removed: 0}, req.session.user, res);
     }
 };
+

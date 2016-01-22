@@ -22,10 +22,10 @@ web.errmsg = function (result, msg) {
 };
 
 web.new_todo = function () {
-    web.dialog('edit', {title: '新任务', type: 'todo'});
+    web.dialog('edit_todo', {title: '新任务'});
 };
 web.new_project = function () {
-    web.dialog('edit', {title: '新项目', type: 'project'});
+    web.dialog('edit_project', {title: '新项目'});
 };
 
 web.finish = function (e) {
@@ -55,7 +55,7 @@ web.edit = function (e) {
         var type = target.getAttribute('o_type') || 'todo';
         web.services[type].get(target.getAttribute('o_id'), function (result) {
             if (result && result.code == 0 && result.data) {
-                web.dialog('edit', {title: type == 'todo' ? '任务详情' : '项目详情', type: type, data: result.data});
+                web.dialog('edit_' + type, {title: type == 'todo' ? '任务详情' : '项目详情', data: result.data});
             } else {
                 web.errmsg(result, '未找到内容！')
             }

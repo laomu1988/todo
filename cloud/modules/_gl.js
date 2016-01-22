@@ -66,6 +66,19 @@ gl.extend(gl, {
                     query.equalTo(attr, data[attr]);
                 }
             }
+            var objectValue = ['user', 'project', 'pid'];
+            for (var i = objectValue.length - 1; i >= 0; i--) {
+                var attr = data[objectValue[i]];
+                if (typeof data[attr] != 'undefined') {
+                    var classname = '';
+                    if (attr == 'pid') {
+                        classname = 'Todo';
+                    } else {
+                        classname = attr.charAt(0).toUpperCase() + attr.substring(1);
+                    }
+                    query.equalTo(attr, gl.withId(classname, data[attr]))
+                }
+            }
             var pagesize = data.pagesize > 0 ? data.pagesize : 20;
             var page = data.page > 0 ? data.page : 1;
             if (page > 1) {

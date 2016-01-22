@@ -27,6 +27,9 @@ module.exports = {
         d.begin = d.begin ? d.begin : Date.now();
         gl.newAndSave('Todo', d, res);
     },
+    updatePid: function (id, callback) {
+
+    },
     // todo列表 finished:bool,begin:number,finish:number,type: started,finished
     list: function (req, res) {
         var data = req.data;
@@ -35,16 +38,20 @@ module.exports = {
         if (data.project) {
             sql += ' and project = pointer("Project","' + data.project + '")';
         }
-
+        if (data.pid) {
+            sql += ' and pid = pointer("Todo","' + data.pid + '")';
+        }
         if (data.removed + '' == 'true') {
             // 已经删除的任务
-            sql += ' and removed = true';
+            sql += ' and removed > 0';
         } else if (data.finished + '' == 'true') {
             // 已经完成的任务
-            sql += ' and removed = false and finish is exists and finish != 0 and finish < ' + Date.now();
+            sql += ' and removed = 0 and finish >= 1 and finish < ' + Date.now();
         } else if (data.finished != 'all') {
             // 未完成的任务
-            sql += ' and removed = false and ( finish is not exists or finish = 0 or finish > ' + Date.now() + ')';
+            sql += ' and removed = 0 and ( finish = 0 or finish > ' + Date.now() + ')';
+        } else {
+            sql += ' and removed = 0 ';
         }
 
         // 某一个时间节点之间的任务
@@ -78,15 +85,15 @@ module.exports = {
         }, data, res);
     },
     finish: function (req, res) {
-        gl.editMyData('Todo', req.data.id, {finish: Date.now()},req.session.user, res);
+        gl.editMyData('Todo', req.data.id, {finish: Date.now()}, req.session.user, res);
     },
     unfinish: function (req, res) {
-        gl.editMyData('Todo', req.data.id, {finish: 0},req.session.user, res);
+        gl.editMyData('Todo', req.data.id, {finish: 0}, req.session.user, res);
     },
     remove: function (req, res) {
-        gl.editMyData('Todo', req.data.id, {removed: true},req.session.user, res);
+        gl.editMyData('Todo', req.data.id, {removed: Date.now()}, req.session.user, res);
     },
     unremove: function (req, res) {
-        gl.editMyData('Todo', req.data.id, {removed: false},req.session.user, res);
+        gl.editMyData('Todo', req.data.id, {removed: 0}, req.session.user, res);
     }
 };
