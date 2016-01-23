@@ -52,16 +52,18 @@ module.exports = {
             sql += ' and removed = 0';
         }
 
-        if (data.finished == 'true') {
+
+        if (data.finished + '' == 'true') {
             sql += ' and finish >= 1 and finish < ' + Date.now();
-        } else if (data.finished == 'false') {
+        } else if (data.finished + '' == 'false') {
             sql += ' and ( finish = 0 or finish > ' + Date.now() + ')';
         }
 
         // 某一个时间节点之间的任务
         if (data.begin && data.finish) {
-        }
-        else if (data.finish) {
+            data.begin = parseInt(data.begin);
+            data.finish = parseInt(data.finish);
+            sql += ' and  begin <=' + data.finish + ' and (finish = 0 or finish >= ' + data.begin + ')';
         }
         if (data.order) {
             sql += ' order by ' + data.order;

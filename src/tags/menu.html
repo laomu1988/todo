@@ -11,8 +11,10 @@
     <div class="type">新建</div>
     <ul>
         <li><a href="javascript:void(0)" onclick="{web.new_todo}"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li>
-        <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i> 新项目</a></li>
-        <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i> 新笔记</a></li>
+        <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i>
+            新项目</a></li>
+        <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i>
+            新笔记</a></li>
         <!--<li><a href="javascript:void(0)" onclick="{web.new_group}"><i class="glyphicon glyphicon-list-alt"></i> 新群组</a>
         </li>-->
     </ul>
@@ -22,7 +24,7 @@
             <a href="#method=todo" class="{active: method == 'todo'}"><i class="glyphicon glyphicon-star"></i> 今日待办</a>
         </li>
         <li>
-            <a href="javascript:void(0)"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li>
+            <a href="#method=timeline"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li>
     </ul>
     <div if="{projects && projects.length > 0}" class="type">项目</div>
     <ul>

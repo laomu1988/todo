@@ -34,6 +34,10 @@ $(function () {
                     showList('removed', result);
                 });
                 break;
+            case 'timeline':
+                loading.hide();
+                riot.mount('view', 'timeline', {});
+                break;
             case 'todo':
             default:
                 web.services.todo.list(function (result) {

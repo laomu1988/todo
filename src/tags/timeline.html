@@ -1,0 +1,63 @@
+<timeline>
+    <style>
+        .list {
+            position: relative;
+        }
+
+        .todo {
+            font-size: 13px;
+            height: 20px;
+            line-height: 20px;
+            background: #129FEA;
+            color: #fff;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+    </style>
+    <!--按照统计时间显示任务-->
+    <div class="timeline">
+        时间统计表
+    </div>
+    <div class="week">
+        <span>日</span>
+        <span>一</span>
+        <span>二</span>
+        <span>三</span>
+        <span>四</span>
+        <span>五</span>
+        <span>六</span>
+    </div>
+    <div class="list">
+        <div class="todo" each="{list}" style="{style}">{name}</div>
+    </div>
+    <script>
+        var self = this;
+        var len = 24 * 60 * 60 * 1000 * 7, finish = Date.now(), begin = finish - len;
+        web.services.todo.list({
+            begin: begin,
+            finish: finish
+        }, function (data) {
+            if (data && data.code == 0 && data.data) {
+                self.list = data.data.results;
+                handleList(self.list);
+                console.log(self.list);
+                self.update();
+            }
+        });
+
+        function handleList(list) {
+            for (var i = 0; i < list.length; i++) {
+                var todo = list[i];
+                if (todo.finish && todo.finish < todo.begin) {
+                    var temp = todo.begin;
+                    todo.begin = todo.finish;
+                    todo.finish = todo.begin;
+                }
+                todo.left = todo.begin >= begin ? (todo.begin - begin) / len * 100 : 0;
+                todo.right = todo.finish > 0 && todo.finish <= finish ? (finish - todo.finish) / len * 100 : 100;
+                todo.style = 'margin-left: ' + todo.left + '%;width: ' + (todo.right - todo.left) + '%';
+            }
+        }
+    </script>
+</timeline>
