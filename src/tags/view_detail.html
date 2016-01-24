@@ -40,7 +40,7 @@
                 }
             })
         }
-        web.services.todo.list({project: web._hashs.project, finished: false}, function (result) {
+        web.services.todo.list({project: web._hashs.project, finished: false, pid: false}, function (result) {
             if (result && result.code == 0 && result.data) {
                 self.list = result.data.results;
                 riot.mount(self.root.querySelector('.list'), 'todo_list', {list: self.list});

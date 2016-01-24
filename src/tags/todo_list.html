@@ -17,14 +17,27 @@
         .todo:hover {
             background: #e8e8e8;
         }
+
+        .project, .pid {
+            background: #666;
+            color: #fff;
+            padding: 3px 4px;
+            border-radius: 3px;
+        }
+
+        .pid {
+            background: #999;
+        }
     </style>
-    <div each="{opts.list}" o_type="todo" o_id="{objectId}" draggable="true" ondragstart="{web.ondrag}"
+    <div each="{opts.list}" o_type="todo" o_id="{objectId}"
+         draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" method="todo"
          name="{name}" class="todo {'removed':removed}">
         <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId}
                checked="{finish < now && finish != 0}">
         <a if="{project&& project.name}" href="#method=project&project={project.objectId}" class="project">[{project.name}]</a>
-        <a if="{pid&& pid.name}" href="#method=project&id={project.objectId}" class="pid">[{pid.name}]</a>
-        <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" method="todo"
+        <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}"
+           o_type="todo">[{pid.name}]</a>
+        <span onclick="{web.edit}" o_type="todo" o_id="{objectId}"
               ondragover="{web.ondragover}">{name}</span>
     </div>
     <script>

@@ -21,22 +21,37 @@ web.ondrop = function (e) {
         case 'todo':
             if (type == 'todo') {
                 // 将一个任务拖动到另一个任务上面
+                var pid = data['o_id'];
+                var todo = web._todos[pid];
+                if (todo) {
+                    web.confirm('你确定要将“' + web._todos[id].name + '”修改为“' + todo.name + '”的子任务吗？', function () {
+                        web.services.todo.edit({
+                            id: id,
+                            pid: pid,
+                            project: todo.project.objectId
+                        }, function (data) {
+                            if (data.code == 0) {
+                                web.message('修改成功！');
+                                $(web.__drag).remove();
+                            } else {
+                                web.message('修改失败！');
+                            }
+                        });
+                    });
+                }
+
             }
             break;
         case 'project':
             // 修改所在project
             if (type == 'todo') {
                 var project = data['o_id'];
-                var todo = null;
-                for (var ids in web._todos) {
-                    if (ids == id) {
-                        todo = web._todos[id];
-                        if (todo.project.objectId == project) {
-                            web.message('已在该项目内部，无需修改！');
-                            return false;
-                        }
-                    }
+                var todo = web._todos[id];
+                if (todo.project.objectId == project) {
+                    web.message('已在该项目内部，无需修改！');
+                    return false;
                 }
+
                 web.services.todo.edit({
                     id: id,
                     project: data['o_id']
