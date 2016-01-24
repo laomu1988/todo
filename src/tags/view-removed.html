@@ -1,0 +1,16 @@
+<view-removed>
+    <!--已删除内容列表-->
+    <div class="name">已删除项目</div>
+    <div riot-tag="view" server="{web.services.project.list}" tag="project-list" data="{data}" field="list"
+         server-data="data.results"></div>
+    <div class="name">已删除任务</div>
+    <div riot-tag="view" server="{web.services.todo.list}" tag="todo_list" data="{data}" field="list"
+         server-data="data.results"></div>
+    <script>
+        var self = this;
+        self.data = {
+            removed: true,
+            order: 'removed desc'
+        }
+    </script>
+</view-removed>

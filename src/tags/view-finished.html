@@ -1,0 +1,16 @@
+<view-finished>
+    <!--已删除内容列表-->
+    <div class="name">已完成项目</div>
+    <div riot-tag="view" server="{web.services.project.list}" tag="project-list" data="{data}" field="list"
+         server-data="data.results"></div>
+    <div class="name">已完成任务</div>
+    <div riot-tag="view" server="{web.services.todo.list}" tag="todo_list" data="{data}" field="list"
+         server-data="data.results"></div>
+    <script>
+        var self = this;
+        self.data = {
+            finished: true,
+            order: 'finish desc'
+        }
+    </script>
+</view-finished>

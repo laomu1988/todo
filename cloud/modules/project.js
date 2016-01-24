@@ -15,10 +15,13 @@ module.exports = {
     },
     new: function (req, res) {
         var data = req.data;
-        gl.newAndSave('Project', {
-            name: data.name,
-            user: gl.user.myRef(req)
-        }, res);
+        var d = gl.todo.transfer(data);
+        if (!d.name) {
+            return gl.error(res, '项目名称不能为空！');
+        }
+        d.user = d.user ? d.user : gl.user.myRef(req);
+        d.begin = d.begin ? d.begin : Date.now();
+        gl.newAndSave('Project', d, res);
     },
     get: function (req, res) {
         if (req.data.id) {
@@ -30,23 +33,32 @@ module.exports = {
     // project列表
     list: function (req, res) {
         console.log('list project');
-        var data = req.data;
+        var data = req.data, now = Date.now();
         var sql = "select count(*),* from Project where user = pointer('_User','" + req.session.user.objectId + "')";
 
 
         if (data.removed + '' == 'true') {
-            // 已经删除的项目
+            // 已经删除的任务
             sql += ' and removed > 0';
-        } else if (data.finished + '' == 'true') {
-            // 已经完成的项目
-            sql += ' and removed = false and finish != 0 and finish < ' + Date.now();
-        } else if (data.finished != 'all') {
-            // 未完成的项目
-            sql += ' and removed = 0 and (finish = 0 or finish > ' + Date.now() + ')';
+        } else {
+            // 已经完成的任务
+            sql += ' and removed = 0';
         }
-        // 某一个时间节点之间的任务
+
+
+        if (data.finished + '' == 'true') {
+            sql += ' and finish >= 1 and finish < ' + now;
+        } else if (data.finished + '' == 'false') {
+            sql += ' and ( finish = 0 or finish > ' + now + ')';
+        }
+
+        // 某一个时间节点之间
         if (data.begin && data.finish) {
+            data.begin = parseInt(data.begin);
+            data.finish = parseInt(data.finish);
+            sql += ' and  begin <=' + data.finish + ' and (finish = 0 or finish >= ' + data.begin + ')';
         }
+
         if (data.order) {
             sql += ' order by ' + data.order;
         } else {

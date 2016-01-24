@@ -23,7 +23,7 @@ web.ondrop = function (e) {
                 // 将一个任务拖动到另一个任务上面
                 var pid = data['o_id'];
                 var todo = web._todos[pid];
-                if (todo) {
+                if (todo && pid != id) {
                     web.confirm('你确定要将“' + web._todos[id].name + '”修改为“' + todo.name + '”的子任务吗？', function () {
                         web.services.todo.edit({
                             id: id,

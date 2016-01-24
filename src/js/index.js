@@ -25,14 +25,13 @@ $(function () {
                 });
                 break;
             case 'finished':
-                web.services.todo.list({finished: true, order: 'finish'}, function (result) {
-                    showList('todo_list', result);
+                web.services.project.list({finished: true, order: 'finish'}, function (result) {
+                    showList('view-finished', result);
                 });
                 break;
             case 'removed':
-                web.services.todo.list({removed: true}, function (result) {
-                    showList('removed', result);
-                });
+                loading.hide();
+                riot.mount('view', 'view-removed', {});
                 break;
             case 'timeline':
                 loading.hide();

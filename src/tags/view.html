@@ -1,0 +1,45 @@
+<view>
+    <!--
+    tag: 渲染数据
+    server: 后端接口
+    data: 请求参数
+    filed: 加载数据存放字段，默认data
+    server-data: 使用加载的哪个数据传给子模块
+    -->
+    <div class="riot">
+        <div riot-tag="loading" if="{!error}"></div>
+    </div>
+    <script>
+        var self = this, server = self.opts.server, tag = self.opts.tag, field = self.opts.field || 'data', server_data = self.opts['server-data'] || '';
+        if (server && tag) {
+            server(self.opts.data, function (result) {
+                if (result && result.code == 0) {
+                    if (server_data) {
+                        var flag = server_data.indexOf('.');
+                        while (flag >= 0) {
+                            var temp = server_data.substr(0, flag);
+                            server_data = server_data.substr(flag + 1);
+                            result = result[temp];
+                            if (!result) {
+                                self.error = true;
+                            }
+                            flag = server_data.indexOf('.');
+                        }
+                        if (server_data) {
+                            result = result[server_data];
+                        }
+                    }
+                    if (result && !self.error) {
+                        var data = {};
+                        data[field] = result;
+                        riot.mount(self.root.querySelector('.riot'), tag, data);
+                    }
+                } else {
+
+                }
+            })
+        } else {
+            self.error = true;
+        }
+    </script>
+</view>

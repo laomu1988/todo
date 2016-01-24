@@ -23,6 +23,9 @@ module.exports = {
     new: function (req, res) {
         var data = req.data;
         var d = gl.todo.transfer(data);
+        if (!d.name) {
+            return gl.error(res, '任务名称不能为空！');
+        }
         d.user = d.user ? d.user : gl.user.myRef(req);
         d.begin = d.begin ? d.begin : Date.now();
         gl.newAndSave('Todo', d, res);
