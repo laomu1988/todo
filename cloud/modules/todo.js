@@ -33,15 +33,22 @@ module.exports = {
     // todo列表 finished:bool,begin:number,finish:number,type: started,finished
     list: function (req, res) {
         var data = req.data;
-        var sql = "select count(*),* from Todo where user = pointer('_User','" + req.session.user.objectId + "')";
-
+        var now = Date.now();
+        var sql = "select include project,include pid,count(*),* from Todo where user = pointer('_User','" + req.session.user.objectId + "')";
+        if (data.sign == 'today') {
+            sql += ' and (project is not exists or project in (select * from Project where removed = 0 and (finish = 0 or finish > ' + now + ')))';
+        }
         if (data.project) {
+            // 查询项目任务
             sql += ' and project = pointer("Project","' + data.project + '")';
         }
         if (data.pid) {
-            sql += ' and pid = pointer("Todo","' + data.pid + '")';
-        } else {
-            sql += ' and pid is not exists';
+            if (parseInt(data.pid)) {
+                // 查询子任务
+                sql += ' and pid = pointer("Todo","' + data.pid + '")';
+            } else if (data.pid += 'false') {
+                sql += ' and pid is not exists';
+            }
         }
 
         if (data.removed + '' == 'true') {
@@ -54,9 +61,9 @@ module.exports = {
 
 
         if (data.finished + '' == 'true') {
-            sql += ' and finish >= 1 and finish < ' + Date.now();
+            sql += ' and finish >= 1 and finish < ' + now;
         } else if (data.finished + '' == 'false') {
-            sql += ' and ( finish = 0 or finish > ' + Date.now() + ')';
+            sql += ' and ( finish = 0 or finish > ' + now + ')';
         }
 
         // 某一个时间节点之间的任务
@@ -70,7 +77,23 @@ module.exports = {
         } else {
             sql += ' order by updatedAt desc';
         }
-        gl.findAndSend(sql, res);
+        gl.find(sql, function (data) {
+            if (data && data.results && data.results.forEach) {
+                data.results.forEach(function (result) {
+                    var project = result.get('project');
+                    if (project) {
+                        result.set('project', project.toJSON());
+                    }
+                    var pid = result.get('pid');
+                    if (pid) {
+                        result.set('pid', pid.toJSON());
+                    }
+                });
+            }
+            res.json({code: 0, data: data});
+        }, function (err) {
+            res.json(err);
+        });
     },
     // 修改信息 id:'',   name: '',project:''
     edit: function (req, res) {

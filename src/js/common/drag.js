@@ -18,6 +18,11 @@ web.ondrop = function (e) {
     var drag = web.__drag;
     var name = drag.getAttribute('name'), id = src['o_id'], type = src['o_type'] || 'todo';
     switch (data.method) {
+        case 'todo':
+            if (type == 'todo') {
+                // 将一个任务拖动到另一个任务上面
+            }
+            break;
         case 'project':
             // 修改所在project
             if (type == 'todo') {

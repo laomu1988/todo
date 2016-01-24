@@ -13,8 +13,8 @@
                 }, function (data) {
                     if (data && data.code == 0) {
                         web.message('添加新任务“' + val + '”成功！');
-                        web.trigger('new_todo', data.data);
                         e.target.value = '';
+                        web.trigger('new_todo', data.data);
                     } else {
                         web.message((data && data.message) || '添加新任务失败！');
                     }

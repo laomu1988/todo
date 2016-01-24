@@ -1,0 +1,8 @@
+<view_list>
+    <todo_new></todo_new>
+    <div riot-tag="todo_list" list="{list}" detail="true"></div>
+    <script>
+        var self = this;
+        self.list = self.opts.results;
+    </script>
+</view_list>

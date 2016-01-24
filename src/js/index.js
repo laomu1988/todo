@@ -38,10 +38,15 @@ $(function () {
                 loading.hide();
                 riot.mount('view', 'timeline', {});
                 break;
+            case 'today':
+                web.services.todo.list({sign: 'today', finished: false}, function (result) {
+                    showList('view_list', result);
+                });
+                break;
             case 'todo':
             default:
                 web.services.todo.list(function (result) {
-                    showList('todo_list', result);
+                    showList('view_list', result);
                 });
                 break;
         }
