@@ -13,6 +13,9 @@ web.ajax = function (type, page, data, callback) {
         type: type,
         dataType: 'json',
         success: function (result) {
+            if (result) {
+                result._ajax = {type: type, page: page, data: data};
+            }
             web.config.onAjaxload && web.config.onAjaxload(result);
             callback(result);
         },

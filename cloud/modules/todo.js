@@ -75,7 +75,7 @@ module.exports = {
         if (data.order) {
             sql += ' order by ' + data.order;
         } else {
-            sql += ' order by updatedAt desc';
+            sql += ' order by project,weight, updatedAt desc';
         }
         gl.find(sql, function (data) {
             if (data && data.results && data.results.forEach) {

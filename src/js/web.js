@@ -1,11 +1,18 @@
+var web = {};
+// 一些暂存数据
+web._hashs = {}; //链接hashs数据
+web._projects = {}; // 项目数据
+web._todos = {}; //任务数据列表
+web._user = null;//用户信息
+
 // import('common/common.js');
 
 web.mount = function (tag, data) {
     var dom = $('<div></div>').appendTo($('body'));
     return riot.mount(dom[0], tag, data);
 };
-web._hashs = web.params(location.hash.substr(1));
 
+web._hashs = web.params(location.hash.substr(1));
 riot.route.parser(function () {
     web._hashs = web.params(location.hash.substr(1));
     return [web._hashs];
