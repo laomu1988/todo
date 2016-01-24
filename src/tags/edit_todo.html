@@ -44,6 +44,7 @@
 
     <script>
         var self = this;
+        self.data = self.opts.data;
         self.isEdit = !!self.opts.data && !!self.opts.data.objectId;
         self.now = Date.now();
         if (self.isEdit) {
@@ -95,7 +96,11 @@
                 if (value) {
                     if (!id) {
                         console.log('新建子任务：', value);
-                        web.services.todo.new({name: value, pid: self.id}, function (result) {
+                        web.services.todo.new({
+                            name: value,
+                            pid: self.id,
+                            project: self.data.project.objectId
+                        }, function (result) {
                             if (result && result.code == 0) {
                                 web.message('新建子任务成功!');
                                 e.target.value = '';
@@ -106,7 +111,11 @@
                             }
                         });
                     } else {
-                        web.services.todo.edit({name: value, id: id}, function (result) {
+                        web.services.todo.edit({
+                            name: value,
+                            id: id,
+                            project: self.data.project.objectId
+                        }, function (result) {
                             if (result && result.code == 0) {
                                 web.message('修改任务成功！');
                             } else {
