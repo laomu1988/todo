@@ -2,7 +2,7 @@
   "name": "todolist",
   "version": "0.5.1",
   "description": "任务管理",
-  "main": "index.html",
+  "main": "cloud/main.js",
   "author": "laomu1988@qq.com",
   "dependencies": {
     "livereload": "*"
