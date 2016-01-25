@@ -1,6 +1,6 @@
 web.ondrag = function (e) {
     var target = e.currentTarget || e.target;
-    web.__drag = target;
+    web._drag = target;
     return true;
 };
 
@@ -11,11 +11,11 @@ web.ondragover = function (e) {
 
 web.ondrop = function (e) {
     var data = web.attrs(e.currentTarget || e.target);
-    var src = web.attrs(web.__drag);
+    var src = web.attrs(web._drag);
     if (!data || !src) {
         return false;
     }
-    var drag = web.__drag;
+    var drag = web._drag;
     var name = drag.getAttribute('name'), id = src['o_id'], type = src['o_type'] || 'todo';
     switch (data.method) {
         case 'todo':
@@ -32,7 +32,7 @@ web.ondrop = function (e) {
                         }, function (data) {
                             if (data.code == 0) {
                                 web.message('修改成功！');
-                                $(web.__drag).remove();
+                                $(web._drag).remove();
                             } else {
                                 web.message('修改失败！');
                             }
@@ -58,7 +58,7 @@ web.ondrop = function (e) {
                 }, function (data) {
                     if (data.code == 0) {
                         web.message('修改成功！');
-                        $(web.__drag).remove();
+                        $(web._drag).remove();
                     } else {
                         web.message('修改失败！');
                     }
@@ -72,7 +72,7 @@ web.ondrop = function (e) {
                 services(id, function (data) {
                     if (data.code == 0) {
                         web.message('删除成功！');
-                        $(web.__drag).remove();
+                        $(web._drag).remove();
                     } else {
                         web.message('删除失败！');
                     }
@@ -85,7 +85,7 @@ web.ondrop = function (e) {
                 services(id, function (data) {
                     if (data.code == 0) {
                         web.message('修改成功！');
-                        $(web.__drag).remove();
+                        $(web._drag).remove();
                     } else {
                         web.message('修改失败！');
                     }

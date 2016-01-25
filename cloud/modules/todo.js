@@ -40,6 +40,8 @@ module.exports = {
         var sql = "select include project,include pid,count(*),* from Todo where user = pointer('_User','" + req.session.user.objectId + "')";
         if (data.sign == 'today') {
             sql += ' and (project is not exists or project in (select * from Project where removed = 0 and (finish = 0 or finish > ' + now + ')))';
+        } else if (data.sign == 'timeline') {
+            sql += ' and (project is not exists or project in (select * from Project where removed = 0)';
         }
         if (data.project) {
             // 查询项目任务

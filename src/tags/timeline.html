@@ -2,6 +2,9 @@
     <style>
         .list {
             position: relative;
+            background: -webkit-linear-gradient(left, #999 1px, transparent 2px, transparent 200px), -webkit-linear-gradient(top, #ccc 1px, transparent 2px, transparent 21px);
+            background-size: 14.28% 21px;
+            border-top: 1px solid #ccc;
         }
 
         .todo {
@@ -11,13 +14,39 @@
             background: #129FEA;
             color: #fff;
             border-radius: 3px;
-            margin-bottom: 10px;
-            padding: 0 5px;
+            padding: 0 15px;
+            position: relative;
+            margin-top: 1px;
         }
+
+        .todo[finished=false] {
+            background: #cc3747;
+        }
+
+        .todo .one-line {
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .start, .end {
+            display: inline-block;
+            background: greenyellow;
+            border-radius: 10px;
+            height: 16px;
+            width: 16px;
+            position: absolute;
+            left: -9px;
+            top: 2px;
+        }
+
+        .end {
+            left: auto; right: -10px;
+        }
+
     </style>
     <!--按照统计时间显示任务-->
     <div class="timeline">
-        时间统计表
+        <span onclick="{prev}">上一周</span>时间统计表<span onclick="{next}">下一周</span>
     </div>
     <div class="week">
         <span>日</span>
@@ -28,35 +57,83 @@
         <span>五</span>
         <span>六</span>
     </div>
-    <div class="list">
-        <div class="todo" each="{list}" style="{style}">{name}</div>
+    <div class="list" ondragover="{web.ondragover}" ondrop="{ondrop}">
+        <div class="todo" each="{list}" style="{style}" title="{name}" finished="{finished}">
+            <span class="start"></span>
+                <span class="one-line" left="{left}" right="{right}" width="{width}" draggable="true"
+                      ondragstart="{web.ondrag}" o_id="{objectId}" o_type="todo">{name}{last}-{ori}-{width}</span>
+            <span class="end"></span>
+        </div>
     </div>
     <script>
         var self = this;
-        var len = 24 * 60 * 60 * 1000 * 7, finish = Date.now(), begin = finish - len;
-        web.services.todo.list({
-            begin: begin,
-            finish: finish
-        }, function (data) {
+        var len = 24 * 60 * 60 * 1000 * 7;
+        var sign = web._hashs.sign || 'week';
+        self.date = parseInt(web._hashs.date) || Date.now();
+        self.now = Date.now();
+        var date = web.getWeekRange(self.date);
+        self.begin = date.begin, self.finish = date.finish;
+        web.services.todo.list(date, function (data) {
             if (data && data.code == 0 && data.data) {
                 self.list = data.data.results;
-                handleList(self.list);
-                console.log(self.list);
+                if (self.list.forEach) {
+                    self.list.forEach(self.updateTodo);
+                }
                 self.update();
             }
         });
 
-        function handleList(list) {
-            for (var i = 0; i < list.length; i++) {
-                var todo = list[i];
-                if (todo.finish && todo.finish < todo.begin) {
-                    var temp = todo.begin;
-                    todo.begin = todo.finish;
-                    todo.finish = todo.begin;
+        self.updateTodo = function (todo) {
+            if (todo.finish && todo.finish < todo.begin) {
+                var temp = todo.begin;
+                todo.begin = todo.finish;
+                todo.finish = todo.begin;
+            }
+            todo.finished = todo.finish > 0 && todo.finish < web.now; // 是否完成
+
+            todo.last = Math.floor((todo.finish ? (todo.finish - todo.begin) / (24 * 60 * 60 * 1000) : -1) + 1);
+            var begin = todo.begin - (todo.begin - 16 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000),
+                    finish = todo.finish > 0 ? todo.finish - (todo.finish - 16 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000) + 24 * 60 * 60 * 1000 : 0,
+                    left = begin >= self.begin ? (begin - self.begin) / len * 100 : 0,
+                    right = finish > 0 && finish <= self.finish ? (finish - self.begin) / len * 100 : 100;
+            todo.ori = parseInt((left + 10) / (100 / 7));
+            left = left.toFixed(2);
+            right = right.toFixed(2);
+            todo.width = parseInt((right - left + .6) / (100 / 7));
+            todo.style = 'margin-left: ' + left + '%;width: ' + (right - left) + '%';
+        };
+        self.prev = function () {
+            location.href = '#method=timeline&sign=w&date=' + (self.date - len);
+        };
+
+        self.next = function () {
+            location.href = '#method=timeline&sign=w&date=' + (self.date + len);
+        };
+
+        self.ondrop = function (e) {
+            var day = Math.floor(e.offsetX / ($(e.target).width() / 7));
+            var drag = web._drag;
+            var todo = web._todos[drag.getAttribute('o_id')];
+            if (todo) {
+                var add = (day - todo.ori) * 24 * 60 * 60 * 1000;
+                console.log(day - todo.ori);
+                todo.ori = day;
+                todo.begin += add;
+                if (todo.finish) {
+                    todo.finish += add;
                 }
-                todo.left = todo.begin >= begin ? (todo.begin - begin) / len * 100 : 0;
-                todo.right = todo.finish > 0 && todo.finish <= finish ? (finish - todo.finish) / len * 100 : 100;
-                todo.style = 'margin-left: ' + todo.left + '%;width: ' + (todo.right - todo.left) + '%';
+                web.services.todo.edit({
+                    id: todo.objectId,
+                    begin: todo.begin,
+                    finish: todo.finish
+                }, function (data) {
+                    if (data && data.code == 0) {
+                        web.message('修改成功！');
+                        $(drag).parent().css('marginLeft', day / 7 * 100 + '%');
+                    } else {
+                        web.message('修改失败！');
+                    }
+                });
             }
         }
     </script>

@@ -2,7 +2,6 @@ var web = typeof web == 'undefined' ? {} : web;
 
 riot.observable(web);
 
-// import('config.js');
 // import('ajax.js');
 // import('services.js');
 
@@ -20,4 +19,3 @@ riot.observable(web);
 // import('params.js');
 // import('attrs.js');
 
-// import('drag.js');

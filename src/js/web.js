@@ -3,9 +3,14 @@ var web = {};
 web._hashs = {}; //链接hashs数据
 web._projects = {}; // 项目数据
 web._todos = {}; //任务数据列表
-web._user = null;//用户信息
-
+web._user = null; //用户信息
+web._drag = null; // 用户拖动的内容
+// import('module/config.js');
 // import('common/common.js');
+
+// import('module/drag.js');
+// import('module/timeline.js');
+
 
 web.mount = function (tag, data) {
     var dom = $('<div></div>').appendTo($('body'));
