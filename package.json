@@ -5,6 +5,9 @@
   "main": "index.html",
   "author": "v_muzhilong@baidu.com",
   "dependencies": {
+    "livereload": "*"
+  },
+  "devDependencies": {
     "connect": "^3.3.4",
     "dateformat": "^1.0.11",
     "del": "^2.0.2",
@@ -25,7 +28,6 @@
     "gulp-util": "^3.0.6",
     "require-dir": "^0.3.0",
     "spritesmith": "x",
-    "livereload": "*",
     "gulp-sass": "^2.0.4"
   },
   "scripts": {
