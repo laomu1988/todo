@@ -156,12 +156,10 @@ gl.extend(gl, {
      * data： 要修改的值
      * */
     editCondition: function (className, objectId, conditionFunc, data, res) {
-        console.log('editCondition');
         if (!objectId) {
             return gl.error(res, 400);
         }
         gl.findById(className, objectId, function (result) {
-            console.log('查询到结果：', JSON.stringify(result));
             if (conditionFunc(result)) {
                 for (var attr in data) {
                     result.set(attr, data[attr]);
@@ -171,7 +169,7 @@ gl.extend(gl, {
                 res.json({code: 1, message: '没有权限进行该操作！'});
             }
         }, function (err) {
-            console.log('查询出错！');
+            console.log('查询出错:',err);
             res.json(err);
         });
     },
@@ -204,6 +202,9 @@ gl.extend(gl, {
                     break;
                 case 'number':
                     d[attr] = parseFloat(data[attr]);
+                    if (!d[attr]) {
+                        d[attr] = 0;
+                    }
                     break;
                 case 'string':
                     d[attr] = data[attr] + '';

@@ -15,8 +15,9 @@
             color: #fff;
             border-radius: 3px;
             padding: 0 15px;
-            position: relative;
             margin-top: 1px;
+            position: absolute;
+            -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
         }
 
         .todo[finished=false] {
@@ -29,7 +30,6 @@
         }
 
         .start, .end {
-            display: inline-block;
             background: greenyellow;
             border-radius: 10px;
             height: 16px;
@@ -37,6 +37,13 @@
             position: absolute;
             left: -9px;
             top: 2px;
+            display: none;
+        }
+
+        .todo:hover { z-index: 1; }
+
+        .todo:hover .start, .todo:hover .end {
+            display: inline-block;
         }
 
         .end {
@@ -57,7 +64,7 @@
         <span>五</span>
         <span>六</span>
     </div>
-    <div class="list" ondragover="{web.ondragover}" ondrop="{ondrop}">
+    <div class="list" ondragover="{web.ondragover}" ondrop="{ondrop}" style="height:{maxTop * 21 + 23}px;">
         <div class="todo" each="{list}" style="{style}" title="{name}" finished="{finished}">
             <span class="start"></span>
                 <span class="one-line" left="{left}" right="{right}" width="{width}" draggable="true"
@@ -72,7 +79,16 @@
         self.date = parseInt(web._hashs.date) || Date.now();
         self.now = Date.now();
         var date = web.getWeekRange(self.date);
-        self.begin = date.begin, self.finish = date.finish;
+
+        date.order = 'begin,finish';
+        self.begin = date.begin;
+        self.finish = date.finish;
+        self.len = self.finish - self.begin;
+        self.blockNum = 7;
+        self.block = self.len / self.blockNum; //每一块代表的时间刻度
+        self.blockWidth = 100 / self.blockNum; // 每一块的宽度
+        self.placed = [];// 记录每一行的宽度
+
         web.services.todo.list(date, function (data) {
             if (data && data.code == 0 && data.data) {
                 self.list = data.data.results;
@@ -82,25 +98,52 @@
                 self.update();
             }
         });
-
+        self.maxTop = 0;
         self.updateTodo = function (todo) {
-            if (todo.finish && todo.finish < todo.begin) {
-                var temp = todo.begin;
-                todo.begin = todo.finish;
-                todo.finish = todo.begin;
-            }
             todo.finished = todo.finish > 0 && todo.finish < web.now; // 是否完成
-
-            todo.last = Math.floor((todo.finish ? (todo.finish - todo.begin) / (24 * 60 * 60 * 1000) : -1) + 1);
-            var begin = todo.begin - (todo.begin - 16 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000),
-                    finish = todo.finish > 0 ? todo.finish - (todo.finish - 16 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000) + 24 * 60 * 60 * 1000 : 0,
-                    left = begin >= self.begin ? (begin - self.begin) / len * 100 : 0,
-                    right = finish > 0 && finish <= self.finish ? (finish - self.begin) / len * 100 : 100;
-            todo.ori = parseInt((left + 10) / (100 / 7));
-            left = left.toFixed(2);
-            right = right.toFixed(2);
-            todo.width = parseInt((right - left + .6) / (100 / 7));
-            todo.style = 'margin-left: ' + left + '%;width: ' + (right - left) + '%';
+            todo.beginNum = todo.begin > self.begin ? Math.floor((todo.begin - self.begin + self.block - 1) / self.block) : 0;
+            todo.finishNum = todo.finish > 0 ? Math.floor(( todo.finish - self.begin + self.block - 1) / self.block) : self.blockNum;
+            todo.left = (todo.beginNum * self.blockWidth).toFixed(2);
+            todo.width = ((todo.finishNum - todo.beginNum + 1) * self.blockWidth).toFixed(2);
+            for (var line = 0; ; line++) {
+                // 计算从第几行开始摆放
+                if (!self.placed[line]) {
+                    self.placed[line] = [];
+                }
+                var place = self.placed[line];
+                var placed = false;
+                for (var row = todo.beginNum; row <= todo.finishNum; row++) {
+                    if (place[row]) {
+                        //该行已经有元素摆放了
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    // 存放在当前行
+                    for (var row = todo.beginNum; row <= todo.finishNum; row++) {
+                        place[row] = true;
+                    }
+                    todo.top = line;
+                    if (line > self.maxTop) {
+                        self.maxTop = line;
+                    }
+                    break;
+                }
+            }
+            todo.style = 'top:' + (todo.top * 21) + 'px;left: ' + todo.left + '%;width: ' + todo.width + '%';
+            //console.log(todo);
+            /*
+             todo.last = Math.floor((todo.finish ? (todo.finish - todo.begin) / (24 * 60 * 60 * 1000) : -1) + 1);
+             var begin = todo.begin - (todo.begin - 16 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000),
+             finish = todo.finish > 0 ? todo.finish - (todo.finish - 16 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000) + 24 * 60 * 60 * 1000 : 0,
+             left = begin >= self.begin ? (begin - self.begin) / len * 100 : 0,
+             right = finish > 0 && finish <= self.finish ? (finish - self.begin) / len * 100 : 100;
+             todo.ori = parseInt((left + 10) / (100 / 7));
+             left = left.toFixed(2);
+             right = right.toFixed(2);
+             todo.width = parseInt((right - left + .6) / (100 / 7));
+             todo.style = 'margin-left: ' + left + '%;width: ' + (right - left) + '%';*/
         };
         self.prev = function () {
             location.href = '#method=timeline&sign=w&date=' + (self.date - len);
