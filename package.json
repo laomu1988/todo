@@ -1,9 +1,9 @@
 {
   "name": "todolist",
-  "version": "2.0.1",
+  "version": "0.5.1",
   "description": "任务管理",
   "main": "index.html",
-  "author": "v_muzhilong@baidu.com",
+  "author": "laomu1988@qq.com",
   "dependencies": {
     "livereload": "*"
   },
