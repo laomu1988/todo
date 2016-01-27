@@ -13,7 +13,6 @@ gl.todo = require('cloud/modules/todo.js');
 
 gl.AV = AV;
 global.AV = gl.AV;
-console.log(gl.AV.User);
 module.exports = gl;
 
 

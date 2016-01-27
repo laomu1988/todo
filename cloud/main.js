@@ -16,8 +16,6 @@ var routes = require('cloud/routes.js');
 function before(req, res, next) {
     req.data = req.method == 'GET' ? req.query : req.body;
     delete req.data.__proto__;
-    console.log(req.data);
-    console.log('before', JSON.stringify(req.data));
     next();
 }
 // 路由处理部分

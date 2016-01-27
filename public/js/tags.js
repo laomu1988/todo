@@ -242,10 +242,11 @@ riot.tag('login', '<div class="modal"> <div class="modal-dialog"> <div class="mo
         };
         self.on('mount', function () {
             $(self.root).find('.modal').modal();
+            $(self.root).find('#username').focus();
         })
     
 });
-riot.tag('menu', ' <div class="type">新建</div> <ul> <li><a href="javascript:void(0)" onclick="{web.new_todo}"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li> <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i> 新项目</a></li> <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i> 新笔记</a></li>  </ul> <div class="type">查看</div> <ul> <li> <a href="#method=today" class="{active: method == \'todo\'}"><i class="glyphicon glyphicon-star"></i> 今日待办</a> </li> <li> <a href="#method=timeline"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li> </ul> <div if="{projects && projects.length > 0}" class="type">项目</div> <ul> <li each="{projects}"> <a href="#method=project&project={objectId}" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="project" class="{active: method == \'project\' && web._hashs.project == objectId}" ondragstart="{web.ondrag}" draggable="true" o_type="project" o_id="{objectId}"><i class="glyphicon glyphicon-list"></i> {name}</a></li> </ul> <div class="type">状态</div> <ul> <li> <a href="#method=finished" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="finished" class="{active: method == \'finished\'}"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li> <li> <a href="#method=removed" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="removed" class="{active: method == \'removed\'}"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li> </ul>', function(opts) {
+riot.tag('menu', ' <div class="type">新建</div> <ul> <li><a href="javascript:void(0)" onclick="{web.new_todo}"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li> <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i> 新项目</a></li>  </ul> <div class="type">查看</div> <ul> <li> <a href="#method=today" class="{active: method == \'todo\'}"><i class="glyphicon glyphicon-star"></i> 今日待办</a> </li> <li> <a href="#method=timeline"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li> </ul> <div if="{projects && projects.length > 0}" class="type">项目</div> <ul> <li each="{projects}"> <a href="#method=project&project={objectId}" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="project" class="{active: method == \'project\' && web._hashs.project == objectId}" ondragstart="{web.ondrag}" draggable="true" o_type="project" o_id="{objectId}"><i class="glyphicon glyphicon-list"></i> {name}</a></li> </ul> <div class="type">状态</div> <ul> <li> <a href="#method=finished" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="finished" class="{active: method == \'finished\'}"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li> <li> <a href="#method=removed" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="removed" class="{active: method == \'removed\'}"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li> </ul>', function(opts) {
         var self = this;
         self.method = web._hashs.method || 'todo';
         self.projects = [];
@@ -335,6 +336,9 @@ riot.tag('timeline', ' <div class="timeline"> <span onclick="{prev}">上一周</
             todo.finished = todo.finish > 0 && todo.finish < web.now; // 是否完成
             todo.beginNum = todo.begin > self.begin ? Math.floor((todo.begin - self.begin + self.block - 1) / self.block) : 0;
             todo.finishNum = todo.finish > 0 ? Math.floor(( todo.finish - self.begin + self.block - 1) / self.block) : self.blockNum;
+            if (self.finishNum >= self.blockNum) {
+                self.finishNum = self.blockNum - 1;
+            }
             todo.left = (todo.beginNum * self.blockWidth).toFixed(2);
             todo.width = ((todo.finishNum - todo.beginNum + 1) * self.blockWidth).toFixed(2);
             for (var line = 0; ; line++) {
@@ -376,25 +380,36 @@ riot.tag('timeline', ' <div class="timeline"> <span onclick="{prev}">上一周</
         };
 
         self.ondrop = function (e) {
-            var day = Math.floor(e.offsetX / ($(e.target).width() / 7));
+            var blockWidth = $(e.target).width() / self.blockNum;
+            var nowPlace = Math.floor(e.offsetX / blockWidth);
             var drag = web._drag;
             var todo = web._todos[drag.getAttribute('o_id')];
             if (todo) {
-                var add = (day - todo.ori) * 24 * 60 * 60 * 1000;
-                console.log(day - todo.ori);
-                todo.ori = day;
+                var add = (nowPlace - todo.beginNum) * self.block;
+
                 todo.begin += add;
                 if (todo.finish) {
                     todo.finish += add;
                 }
+                console.log({
+                    id: todo.objectId,
+                    begin: todo.begin + add,
+                    finish: todo.finish > 0 ? todo.finish + add : 0
+                });
+                todo.beginNum = nowPlace;
+                web.message('修改成功！');
+                $(drag).parent().css('left', todo.beginNum * self.blockWidth + '%');
+
+                return;
                 web.services.todo.edit({
                     id: todo.objectId,
-                    begin: todo.begin,
-                    finish: todo.finish
+                    begin: todo.begin + add,
+                    finish: todo.finish > 0 ? todo.finish + add : 0
                 }, function (data) {
                     if (data && data.code == 0) {
+                        todo.beginNum = nowPlace;
                         web.message('修改成功！');
-                        $(drag).parent().css('marginLeft', day / 7 * 100 + '%');
+                        $(drag).parent().css('left', todo.beginNum * self.blockWidth + '%');
                     } else {
                         web.message('修改失败！');
                     }

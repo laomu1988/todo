@@ -103,6 +103,9 @@
             todo.finished = todo.finish > 0 && todo.finish < web.now; // 是否完成
             todo.beginNum = todo.begin > self.begin ? Math.floor((todo.begin - self.begin + self.block - 1) / self.block) : 0;
             todo.finishNum = todo.finish > 0 ? Math.floor(( todo.finish - self.begin + self.block - 1) / self.block) : self.blockNum;
+            if (self.finishNum >= self.blockNum) {
+                self.finishNum = self.blockNum - 1;
+            }
             todo.left = (todo.beginNum * self.blockWidth).toFixed(2);
             todo.width = ((todo.finishNum - todo.beginNum + 1) * self.blockWidth).toFixed(2);
             for (var line = 0; ; line++) {
@@ -154,25 +157,36 @@
         };
 
         self.ondrop = function (e) {
-            var day = Math.floor(e.offsetX / ($(e.target).width() / 7));
+            var blockWidth = $(e.target).width() / self.blockNum;
+            var nowPlace = Math.floor(e.offsetX / blockWidth);
             var drag = web._drag;
             var todo = web._todos[drag.getAttribute('o_id')];
             if (todo) {
-                var add = (day - todo.ori) * 24 * 60 * 60 * 1000;
-                console.log(day - todo.ori);
-                todo.ori = day;
+                var add = (nowPlace - todo.beginNum) * self.block;
+
                 todo.begin += add;
                 if (todo.finish) {
                     todo.finish += add;
                 }
+                console.log({
+                    id: todo.objectId,
+                    begin: todo.begin + add,
+                    finish: todo.finish > 0 ? todo.finish + add : 0
+                });
+                todo.beginNum = nowPlace;
+                web.message('修改成功！');
+                $(drag).parent().css('left', todo.beginNum * self.blockWidth + '%');
+
+                return;
                 web.services.todo.edit({
                     id: todo.objectId,
-                    begin: todo.begin,
-                    finish: todo.finish
+                    begin: todo.begin + add,
+                    finish: todo.finish > 0 ? todo.finish + add : 0
                 }, function (data) {
                     if (data && data.code == 0) {
+                        todo.beginNum = nowPlace;
                         web.message('修改成功！');
-                        $(drag).parent().css('marginLeft', day / 7 * 100 + '%');
+                        $(drag).parent().css('left', todo.beginNum * self.blockWidth + '%');
                     } else {
                         web.message('修改失败！');
                     }

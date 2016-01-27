@@ -99,7 +99,6 @@ gl.extend(gl, {
         });
     },
     findById: function (className, objectId, success, error) {
-        console.log('findById', className, objectId, success, error);
         var query = new AV.Query(gl.class(className));
         query.get(objectId, {
             success: success,
@@ -202,9 +201,6 @@ gl.extend(gl, {
                     break;
                 case 'number':
                     d[attr] = parseFloat(data[attr]);
-                    if (!d[attr]) {
-                        d[attr] = 0;
-                    }
                     break;
                 case 'string':
                     d[attr] = data[attr] + '';
