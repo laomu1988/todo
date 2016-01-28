@@ -7,7 +7,7 @@ var app = express();
 // App 全局配置
 app.use(express.bodyParser());    // 读取请求 body 的中间件
 app.use(express.cookieParser());
-app.use(express.cookieSession({secret: 'todo2015', name: 'todo', cookie: {maxAge: 60 * 60 * 1000}})); // session
+app.use(express.cookieSession({secret: 'todo2015', name: 'todo', cookie: {maxAge: 60 * 60 * 1000 * 24 * 7}})); // session
 
 
 var routes = require('cloud/routes.js');
