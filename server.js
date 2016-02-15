@@ -1,16 +1,16 @@
 // Use AV.Cloud.define to define as many cloud functions as you want.
 // For example:
-var gl = require('cloud/gl.js');
+var gl = require('./cloud/gl.js');
 // 在 Cloud code 里初始化 Express 框架
 var express = require('express');
+var session = require('cookie-session');
+var bodyParser = require('body-parser');
 var app = express();
 // App 全局配置
-app.use(express.bodyParser());    // 读取请求 body 的中间件
-app.use(express.cookieParser());
-app.use(express.cookieSession({secret: 'todo2015', name: 'todo', cookie: {maxAge: 60 * 60 * 1000 * 24 * 7}})); // session
+app.use(bodyParser.json());    // 读取请求 body 的中间件
+app.use(session({secret: 'todo2015', name: 'todo', cookie: {maxAge: 60 * 60 * 1000 * 24 * 7}})); // session
 
-
-var routes = require('cloud/routes.js');
+var routes = require('./cloud/routes.js');
 
 // 每次处理程序之前，都增加转换
 function before(req, res, next) {
@@ -30,8 +30,11 @@ for (var i = 0; i < routes.length; i++) {
         app[method].apply(app, arr);
     })(routes[i]);
 }
-app.use(express.static(__dirname + '/../public'));
+app.use(express.static('public'));
 app.use(function (req, res) {
     gl.error(res, 404);
 });
-app.listen();
+var PORT = parseInt(process.env.LC_APP_PORT || 3000);
+app.listen(PORT, function () {
+    console.log('Node app is running, port:', PORT);
+});
