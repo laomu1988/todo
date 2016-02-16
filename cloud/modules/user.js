@@ -24,13 +24,15 @@ module.exports = {
         }
         gl.AV.User.logIn(data.username, data.password, gl.send(res, function (data) {
             data = JSON.parse(JSON.stringify(data));
-            console.log('用户登录成功：', data.username);
+            console.log('用户登录成功：', data.username, data);
             req.session.user = data;
+            //console.log('session', req.session);
+            //console.log('user', req.AV.user);
         }));
     },
     isLogin: function (req) {
         var user = req.session.user;
-        if (user && user.objectId) {
+        if (user) {
             console.log('已经登陆');
             return true;
         }

@@ -7,16 +7,6 @@ gl.right = require('./modules/right.js');
 gl.project = require('./modules/project.js');
 gl.todo = require('./modules/todo.js');
 
-// console.log(gl);
-
-var AV =  require('leanengine');
-global.AV = gl.AV = AV;
-var APP_ID = process.env.LC_APP_ID;
-var APP_KEY = process.env.LC_APP_KEY;
-var MASTER_KEY = process.env.LC_APP_MASTER_KEY;
-
-AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
-
 module.exports = gl;
 
 

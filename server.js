@@ -1,14 +1,27 @@
 // Use AV.Cloud.define to define as many cloud functions as you want.
 // For example:
-var gl = require('./cloud/gl.js');
-// 在 Cloud code 里初始化 Express 框架
 var express = require('express');
+var gl = require('./cloud/gl.js');
+var AV = require('leanengine');
+global.AV = gl.AV = AV;
+var APP_ID = process.env.LC_APP_ID;
+var APP_KEY = process.env.LC_APP_KEY;
+var MASTER_KEY = process.env.LC_APP_MASTER_KEY;
+
+AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
+
+
 var session = require('cookie-session');
 var bodyParser = require('body-parser');
 var app = express();
 // App 全局配置
 app.use(bodyParser.json());    // 读取请求 body 的中间件
-app.use(session({secret: 'todo2015', name: 'todo', cookie: {maxAge: 60 * 60 * 1000 * 24 * 7}})); // session
+app.use(AV.Cloud.CookieSession({secret: 'my secret', maxAge: 3600000, fetchUser: true}));
+
+
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({secret: 'todo2015', name: 'todo', keys: ['key1', 'key2'], cookie: {maxAge: 60 * 60 * 1000 * 24 * 7}})); // session
+
 
 var routes = require('./cloud/routes.js');
 
