@@ -30,6 +30,10 @@ module.exports = {
         d.begin = d.begin ? d.begin : Date.now();
         gl.newAndSave('Todo', d, res);
     },
+    updateTodo: function (id) {
+        // 更新数据： 已完成数目
+
+    },
     updatePid: function (id, callback) {
 
     },
@@ -40,6 +44,7 @@ module.exports = {
         var sql = "select include project,include pid,count(*),* from Todo where user = pointer('_User','" + req.session.user.objectId + "')";
         if (data.sign == 'today') {
             sql += ' and (project is not exists or project in (select * from Project where removed = 0 and (finish = 0 or finish > ' + now + ')))';
+            sql += ' and pid is not exists';
         } else if (data.sign == 'timeline') {
             sql += ' and (project is not exists or project in (select * from Project where removed = 0)';
         }
@@ -80,7 +85,7 @@ module.exports = {
         if (data.order) {
             sql += ' order by ' + data.order;
         } else {
-            sql += ' order by project,weight, updatedAt desc';
+            sql += ' order by weight, updatedAt desc';
         }
         gl.find(sql, function (data) {
             if (data && data.results && data.results.forEach) {
