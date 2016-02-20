@@ -907,17 +907,19 @@ web.new_project = function () {
     web.dialog('edit_project', {title: '新项目'});
 };
 
-web.finish = function (e) {
+web.finish = function (e, callback) {
     var target = e.currentTarget || e.target || e;
     if (target.getAttribute) {
         var check = target.checked, type = target.getAttribute('o_type') || 'todo';
         var services = web.services[type][!check ? 'unfinish' : 'finish'];
-        services(target.getAttribute('o_id'), function (data) {
+        var id = target.getAttribute('o_id');
+        services(id, function (data) {
             if (data && data.code == 0) {
                 web.message('操作成功！');
-                if (type == 'todo' && !target.getAttribute('keep')) {
-                    $(e.target).parent().remove();
-                }
+                /*if (type == 'todo' && !target.getAttribute('keep')) {
+                 $(e.target).parent().remove();
+                 }*/
+                callback && callback(id);
             } else {
                 web.message((data && data.message) || '操作失败！');
             }
