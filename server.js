@@ -15,7 +15,8 @@ var session = require('cookie-session');
 var bodyParser = require('body-parser');
 var app = express();
 // App 全局配置
-app.use(bodyParser.json());    // 读取请求 body 的中间件
+app.use(bodyParser.json());    // 读取请求 get请求中的json
+app.use(bodyParser.urlencoded({ extended: false }));// post form 的中间件
 app.use(AV.Cloud.CookieSession({secret: 'my secret', maxAge: 3600000, fetchUser: true}));
 
 

@@ -9,8 +9,8 @@ function login(username, password, req, res) {
 
 module.exports = {
     new: function (req, res) {
-        var d = gl.new('User', req.data);
-        d.signUp(null, gl.send(res));
+        var user = gl.new('User', req.data);
+        user.signUp(null, gl.send(res));
     },
     find: function (data, callback, error) {
 
