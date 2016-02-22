@@ -53,6 +53,9 @@
         self.method = web._hashs.method || 'todo';
         self.projects = [];
         self.updateMenu = function () {
+            if (!web.getCookie('user', 'json')) {
+                return;
+            }
             self.method = web._hashs.method || 'todo';
             web.services.project.list({finished: false, removed: false}, function (data) {
                 if (data && data.data && data.data.results) {

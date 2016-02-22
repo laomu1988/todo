@@ -43,10 +43,12 @@ $(function () {
                 });
                 break;
             case 'todo':
-            default:
                 web.services.todo.list(function (result) {
                     showList('view_list', result);
                 });
+                break;
+            default:
+                riot.mount('.main', 'index');
                 break;
         }
     }

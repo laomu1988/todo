@@ -18,7 +18,9 @@ input, textarea {
   height: 30px;
   line-height: 30px;
   font-size: 14px;
-  -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 textarea {
@@ -32,9 +34,16 @@ textarea {
   text-overflow: ellipsis;
 }
 
+html, body {
+  height: 100%;
+}
+
 .main-box {
   padding: 0;
   overflow: hidden;
+  min-height: 100%;
+  margin-bottom: -26px;
+  padding-top: 60px;
   & > menu {
     width: 150px;
     float: left;
@@ -87,4 +96,9 @@ textarea {
 
 .removed {
   text-decoration: line-through;
+}
+
+footer {
+  text-align: center;
+  background: #ADADAD;
 }

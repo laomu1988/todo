@@ -7,13 +7,26 @@ function login(username, password, req, res) {
     }));
 }
 
+
 module.exports = {
     new: function (req, res) {
+        if (!req.data) {
+            return gl.error(res, 400);
+        } else if (req.data.password !== req.data.password2) {
+            return gl.error(res, '两次输入的密码不一致！');
+        }
         var user = gl.new('User', req.data);
-        user.signUp(null, gl.send(res));
-    },
-    find: function (data, callback, error) {
-
+        user.signUp(null, {
+            success: function (data) {
+                data = JSON.parse(JSON.stringify(data));
+                console.log('注册成功：', data.username, data);
+                req.session.user = data;
+                res.json({code: 0, data: data});
+                return;
+            }, error: function (data, err) {
+                res.json(err || data);
+            }
+        });
     },
     login: function (req, res) {
         console.log('用户尝试登录：', req.data.username);
@@ -29,6 +42,17 @@ module.exports = {
             //console.log('session', req.session);
             //console.log('user', req.AV.user);
         }));
+    },
+    info: function (req, res) {
+        var user = req.session.user;
+        if (user) {
+            res.json({code: 0, data: user});
+        } else {
+            gl.error(res, 'need_login');
+        }
+    },
+    find: function (data, callback, error) {
+
     },
     isLogin: function (req) {
         var user = req.session.user;

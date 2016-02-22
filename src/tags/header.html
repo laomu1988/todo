@@ -1,5 +1,6 @@
 <header>
-    <span>
+    <span if="{!user || !user.username}">Todo任务列表</span>
+    <span if="{user && user.username}">
         <i class="glyphicon glyphicon-user"></i> {user.username}
     </span>
     <span class="pull-right" onclick="{login}" if="{!isLogin}">

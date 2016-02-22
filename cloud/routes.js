@@ -12,6 +12,7 @@ module.exports = [
     {url: '/api/user/register', handles: [gl.user.new], method: 'all'},
     {url: '/api/user/login', handles: [gl.user.login]},
     {url: '/api/user/logout', handles: [gl.user.logout]},
+    {url: '/api/user/info', handles: [gl.user.info]},
 
     // 任务
     {url: '/api/todo/new', handles: [gl.right.needLogin, gl.todo.new]},

@@ -1,7 +1,7 @@
 web.services = {
     user: {
         register: function (data, callback) {
-            web.post('user/register', data, callback);
+            web.get('user/register', data, callback);
         },
         login: function (data, callback) {
             web.get('user/login', data, callback);

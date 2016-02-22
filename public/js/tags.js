@@ -184,7 +184,7 @@ riot.tag('edit_todo', '<div class="name"> <input type="text" name="name" placeho
         }
     
 });
-riot.tag('header', '<span> <i class="glyphicon glyphicon-user"></i> {user.username} </span> <span class="pull-right" onclick="{login}" if="{!isLogin}"> <i class="glyphicon glyphicon-log-in"></i> 登录 </span> <span class="pull-right" onclick="{register}" if="{!isLogin}"> <i class="glyphicon glyphicon-expand"></i> 注册 </span> <span class="pull-right" if="{isLogin}" onclick="{logout}"> <i class="glyphicon glyphicon-log-out"></i> 退出 </span>', function(opts) {
+riot.tag('header', '<span if="{!user || !user.username}">Todo任务列表</span> <span if="{user && user.username}"> <i class="glyphicon glyphicon-user"></i> {user.username} </span> <span class="pull-right" onclick="{login}" if="{!isLogin}"> <i class="glyphicon glyphicon-log-in"></i> 登录 </span> <span class="pull-right" onclick="{register}" if="{!isLogin}"> <i class="glyphicon glyphicon-expand"></i> 注册 </span> <span class="pull-right" if="{isLogin}" onclick="{logout}"> <i class="glyphicon glyphicon-log-out"></i> 退出 </span>', function(opts) {
         var self = this;
         self.login = function () {
             web.mount('login');
@@ -214,6 +214,10 @@ riot.tag('header', '<span> <i class="glyphicon glyphicon-user"></i> {user.userna
             self.update();
         });
     
+});
+riot.tag('index', ' <div class="main"> <h1>Todo任务列表</h1> <h2>使用技术：</h2> <ul> <li>riot框架,bootstrap</li> <li>Nodejs,express</li> <li>avoscloud中数据库</li> </ul> <h2>总体功能：</h2> <ul> <li>项目管理</li> <li>任务管理</li> <li>用户管理</li> <li>笔记管理</li> </ul> <h2>当前功能：</h2> <ul> <li>用户管理： 用户注册及登录</li> <li>项目管理：新建、修改、删除项目</li> <li>任务管理：新建、修改、删除任务、子任务管理</li> </ul> <h2>Todo：</h2> <ul> <li>用户管理：用户修改信息，找回密码</li> <li>任务管理：子任务数目，任务状态</li> <li>笔记管理：新建、修改、删除笔记、按照时间曲线学习笔记</li> </ul> </div>', '[riot-tag=index] .main,index .main { padding: 0 50px 40px; margin: 0; }', function(opts) {
+
+
 });
 riot.tag('loading', '<div class="loading"><i class="fa fa-spinner fa-pulse"></i></div>', function(opts) {
 
@@ -246,11 +250,18 @@ riot.tag('login', '<div class="modal"> <div class="modal-dialog"> <div class="mo
         })
     
 });
+riot.tag('main', '<menu></menu> <div class="main"> <div class="loading"><i class="fa fa-spinner fa-pulse"></i></div> <view></view> </div>', function(opts) {
+
+    
+});
 riot.tag('menu', ' <div class="type">新建</div> <ul> <li><a href="javascript:void(0)" onclick="{web.new_todo}"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li> <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i> 新项目</a></li>  </ul> <div class="type">查看</div> <ul> <li> <a href="#method=today" class="{active: method == \'todo\'}"><i class="glyphicon glyphicon-star"></i> 今日待办</a> </li> <li> <a href="#method=timeline"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li> </ul> <div if="{projects && projects.length > 0}" class="type">项目</div> <ul> <li each="{projects}"> <a href="#method=project&project={objectId}" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="project" class="{active: method == \'project\' && web._hashs.project == objectId}" ondragstart="{web.ondrag}" draggable="true" o_type="project" o_id="{objectId}"><i class="glyphicon glyphicon-list"></i> {name}</a></li> </ul> <div class="type">状态</div> <ul> <li> <a href="#method=finished" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="finished" class="{active: method == \'finished\'}"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li> <li> <a href="#method=removed" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="removed" class="{active: method == \'removed\'}"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li> </ul>', function(opts) {
         var self = this;
         self.method = web._hashs.method || 'todo';
         self.projects = [];
         self.updateMenu = function () {
+            if (!web.getCookie('user', 'json')) {
+                return;
+            }
             self.method = web._hashs.method || 'todo';
             web.services.project.list({finished: false, removed: false}, function (data) {
                 if (data && data.data && data.data.results) {
@@ -288,6 +299,9 @@ riot.tag('register', '<div class="modal"> <div class="modal-dialog"> <div class=
                 callback: function (data) {
                     if (data && data.code == 0) {
                         web.alert('注册成功，请到邮箱查看并激活账号！');
+                        web.setCookie('user', data.data);
+                        self.cancel();
+                        web.trigger('update');
                     }
                 }
             });

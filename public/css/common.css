@@ -29,9 +29,15 @@ textarea {
   -ms-text-overflow: ellipsis;
   text-overflow: ellipsis; }
 
+html, body {
+  height: 100%; }
+
 .main-box {
   padding: 0;
-  overflow: hidden; }
+  overflow: hidden;
+  min-height: 100%;
+  margin-bottom: -26px;
+  padding-top: 60px; }
   .main-box > menu {
     width: 150px;
     float: left;
@@ -72,6 +78,10 @@ textarea {
 
 .removed {
   text-decoration: line-through; }
+
+footer {
+  text-align: center;
+  background: #ADADAD; }
 
 .model_message {
   position: fixed;
@@ -119,9 +129,15 @@ textarea {
   -ms-text-overflow: ellipsis;
   text-overflow: ellipsis; }
 
+html, body {
+  height: 100%; }
+
 .main-box {
   padding: 0;
-  overflow: hidden; }
+  overflow: hidden;
+  min-height: 100%;
+  margin-bottom: -26px;
+  padding-top: 60px; }
   .main-box > menu {
     width: 150px;
     float: left;
@@ -162,3 +178,7 @@ textarea {
 
 .removed {
   text-decoration: line-through; }
+
+footer {
+  text-align: center;
+  background: #ADADAD; }
