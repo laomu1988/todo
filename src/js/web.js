@@ -49,10 +49,7 @@ web.finish = function (e, callback) {
         services(id, function (data) {
             if (data && data.code == 0) {
                 web.message('操作成功！');
-                /*if (type == 'todo' && !target.getAttribute('keep')) {
-                 $(e.target).parent().remove();
-                 }*/
-                callback && callback(id);
+                web.trigger(check ? 'finish' : 'unfinish', id);
             } else {
                 web.message((data && data.message) || '操作失败！');
             }

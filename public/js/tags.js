@@ -422,7 +422,7 @@ riot.tag('today', '', function(opts) {
 
 
 });
-riot.tag('todo_list', ' <div each="{opts.list}" o_type="todo" o_id="{objectId}" draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" method="todo" name="{name}" class="todo"> <input type="checkbox" value="" onclick="{finish}" o_type="todo" o_id="{objectId}" __checked="{finish < now && finish != 0}" if="{!removed}"> <span class="btn btn-warning btn-xs" o_type="todo" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span> <a if="{web._hashs.method !== \'project\' && project && project.name }" href="#method=project&project={project.objectId}" class="project">[{project.name}]</a> <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}" o_type="todo">[{pid.name}]</a> <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" ondragover="{web.ondragover}" class="{\'removed\':removed}">{name}</span> </div>', '[riot-tag=todo_list] .todo,todo_list .todo { border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px; } [riot-tag=todo_list] .todo:hover,todo_list .todo:hover { background: #e8e8e8; } [riot-tag=todo_list] .project,todo_list .project, [riot-tag=todo_list] .pid,todo_list .pid { background: #666; color: #fff; padding: 3px 4px; border-radius: 3px; } [riot-tag=todo_list] .pid,todo_list .pid { background: #ADADAD; }', function(opts) {
+riot.tag('todo_list', ' <div each="{opts.list}" o_type="todo" o_id="{objectId}" draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" method="todo" name="{name}" class="todo"> <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id="{objectId}" __checked="{finish < now && finish != 0}" if="{!removed}"> <span class="btn btn-warning btn-xs" o_type="todo" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span> <a if="{web._hashs.method !== \'project\' && project && project.name }" href="#method=project&project={project.objectId}" class="project">[{project.name}]</a> <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}" o_type="todo">[{pid.name}]</a> <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" ondragover="{web.ondragover}" class="{\'removed\':removed}">{name}</span> </div>', '[riot-tag=todo_list] .todo,todo_list .todo { border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px; } [riot-tag=todo_list] .todo:hover,todo_list .todo:hover { background: #e8e8e8; } [riot-tag=todo_list] .project,todo_list .project, [riot-tag=todo_list] .pid,todo_list .pid { background: #666; color: #fff; padding: 3px 4px; border-radius: 3px; } [riot-tag=todo_list] .pid,todo_list .pid { background: #ADADAD; }', function(opts) {
         var self = this;
         self.now = Date.now();
         web.on('new_todo', function (data) {
@@ -433,17 +433,16 @@ riot.tag('todo_list', ' <div each="{opts.list}" o_type="todo" o_id="{objectId}" 
                 web.message('新任务内容为空！');
             }
         });
-        self.finish = function (e) {
-            web.finish(e, function (tid) {
-                var list = self.opts.list;
-                for (var i = 0; i < list.length; i++) {
-                    if (list[i].objectId == tid) {
-                        list.splice(i, 0);
-                        return;
-                    }
+        web.on('finish unfinish', function (type, tid) {
+            var list = self.opts.list;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].objectId == tid) {
+                    list.splice(i, 1);
+                    self.update();
+                    return;
                 }
-            });
-        }
+            }
+        });
     
 });
 

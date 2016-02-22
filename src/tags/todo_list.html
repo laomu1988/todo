@@ -32,7 +32,7 @@
     <div each="{opts.list}" o_type="todo" o_id="{objectId}"
          draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" method="todo"
          name="{name}" class="todo">
-        <input type="checkbox" value="" onclick="{finish}" o_type="todo" o_id={objectId}
+        <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId}
                checked="{finish < now && finish != 0}" if="{!removed}">
         <span class="btn btn-warning btn-xs" o_type="todo" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span>
         <a if="{web._hashs.method !== 'project' && project && project.name }"
@@ -53,17 +53,16 @@
                 web.message('新任务内容为空！');
             }
         });
-        self.finish = function (e) {
-            web.finish(e, function (tid) {
-                var list = self.opts.list;
-                for (var i = 0; i < list.length; i++) {
-                    if (list[i].objectId == tid) {
-                        list.splice(i, 0);
-                        return;
-                    }
+        web.on('finish unfinish', function (type, tid) {
+            var list = self.opts.list;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].objectId == tid) {
+                    list.splice(i, 1);
+                    self.update();
+                    return;
                 }
-            });
-        }
+            }
+        });
     </script>
 </todo_list>
 
