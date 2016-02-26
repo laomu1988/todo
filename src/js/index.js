@@ -48,7 +48,8 @@ $(function () {
                 });
                 break;
             default:
-                riot.mount('.main', 'index');
+                loading.hide();
+                riot.mount('view', 'index');
                 break;
         }
     }
