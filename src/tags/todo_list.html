@@ -28,6 +28,10 @@
         .pid {
             background: #ADADAD;
         }
+
+        .dragover {
+            border-top: 26px #ccc solid;
+        }
     </style>
     <div each="{opts.list}" o_type="todo" o_id="{objectId}"
          draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" method="todo"

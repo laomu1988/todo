@@ -3,13 +3,16 @@ web.ondrag = function (e) {
     web._drag = target;
     return true;
 };
-
+var _dragover = null;
 web.ondragover = function (e) {
+    _dragover && _dragover.removeClass('dragover');
+    _dragover = $(e.target).addClass('dragover');
     e.preventDefault();
     return true;
 };
 
 web.ondrop = function (e) {
+    _dragover && _dragover.removeClass('dragover');
     var data = web.attrs(e.currentTarget || e.target);
     var src = web.attrs(web._drag);
     if (!data || !src) {
