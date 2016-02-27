@@ -6,8 +6,11 @@ web.ondrag = function (e) {
 var _dragover = null;
 web.ondragover = function (e) {
     _dragover && _dragover.removeClass('dragover');
-    _dragover = $(e.target).addClass('dragover');
     e.preventDefault();
+    if (web._drag == e.target) {
+        return true;
+    }
+    _dragover = $(e.target).addClass('dragover');
     return true;
 };
 

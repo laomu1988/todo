@@ -33,8 +33,8 @@
             border-top: 26px #ccc solid;
         }
     </style>
-    <div each="{opts.list}" o_type="todo" o_id="{objectId}"
-         draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" method="todo"
+    <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo"
+         draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}"
          name="{name}" class="todo">
         <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId}
                checked="{finish < now && finish != 0}" if="{!removed}">
@@ -43,8 +43,7 @@
            href="#method=project&project={project.objectId}" class="project">[{project.name}]</a>
         <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}"
            o_type="todo">[{pid.name}]</a>
-        <span onclick="{web.edit}" o_type="todo" o_id="{objectId}"
-              ondragover="{web.ondragover}" class="{'removed':removed}">{name}</span>
+        <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" class="{'removed':removed}">{name}</span>
     </div>
     <script>
         var self = this;
