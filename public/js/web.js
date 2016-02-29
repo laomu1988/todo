@@ -700,16 +700,26 @@ web.ondrag = function (e) {
     web._drag = target;
     return true;
 };
-var _dragover = null;
+var _dragover = null, _dragover_class = '';
 web.ondragover = function (e) {
-    _dragover && _dragover.removeClass('dragover');
-    _dragover = $(e.target).addClass('dragover');
+    _dragover && _dragover_class && _dragover.removeClass(_dragover_class);
+    _dragover = $(e.currentTarget || e.target);
+    if (_dragover[0] == web._drag[0]) {
+        _dragover_class = '';
+    } else {
+        _dragover_class = _dragover.attr('dragover_class');
+        if (_dragover_class) {
+            _dragover.addClass('dragover');
+        }
+    }
     e.preventDefault();
     return true;
 };
-
+web.ondragleave = function (e) {
+    _dragover && _dragover_class && _dragover.removeClass(_dragover_class);
+};
 web.ondrop = function (e) {
-    _dragover && _dragover.removeClass('dragover');
+    _dragover && _dragover_class && _dragover.removeClass(_dragover_class);
     var data = web.attrs(e.currentTarget || e.target);
     var src = web.attrs(web._drag);
     if (!data || !src) {
@@ -721,23 +731,30 @@ web.ondrop = function (e) {
         case 'todo':
             if (type == 'todo') {
                 // 将一个任务拖动到另一个任务上面
-                var pid = data['o_id'];
-                var todo = web._todos[pid];
-                if (todo && pid != id) {
-                    web.confirm('你确定要将“' + web._todos[id].name + '”修改为“' + todo.name + '”的子任务吗？', function () {
-                        web.services.todo.edit({
-                            id: id,
-                            pid: pid,
-                            project: todo.project.objectId
-                        }, function (data) {
-                            if (data.code == 0) {
-                                web.message('修改成功！');
-                                $(web._drag).remove();
-                            } else {
-                                web.message('修改失败！');
-                            }
-                        });
+                var anthor_id = data['o_id'];
+                if (data.weight && anthor_id != id) {
+                    // 改为移动上下顺序
+                    web.services.todo.edit({id: id, weight: data.weight}, function (result) {
+                        if (result.code == 0) {
+                            web.message('修改成功！');
+                            web._todos[id].weight = parseFloat(data.weight) + 0.1;
+                            web.trigger('change-weight', {id: id, weight: data.weight});
+                        } else {
+                            web.message('修改失败！');
+                        }
                     });
+
+                    /*
+                     web.confirm('你确定要将“' + web._todos[id].name + '”修改为“' + todo.name + '”的子任务吗？', function () {
+                     web.services.todo.edit({id: id, pid: pid, project: todo.project.objectId}, function (data) {
+                     if (data.code == 0) {
+                     web.message('修改成功！');
+                     $(web._drag).remove();
+                     } else {
+                     web.message('修改失败！');
+                     }
+                     });
+                     });*/
                 }
 
             }
@@ -927,7 +944,7 @@ web.finish = function (e, callback) {
     } else {
         console.error('web.finish参数错误！');
     }
-    if (e.preventDefault) {
+    if (e.preventDefault && target.getAttribute('prevent')) {
         e.preventDefault();
     }
     return false;

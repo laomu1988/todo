@@ -1,8 +1,6 @@
 <header>
-    <span if="{!user || !user.username}">Todo任务列表</span>
-    <span if="{user && user.username}">
-        <i class="glyphicon glyphicon-user"></i> {user.username}
-    </span>
+    <a href="#"><i class="glyphicon glyphicon-home"></i> Todo</a>
+
     <span class="pull-right" onclick="{login}" if="{!isLogin}">
         <i class="glyphicon glyphicon-log-in"></i> 登录
     </span>
@@ -12,7 +10,9 @@
     <span class="pull-right" if="{isLogin}" onclick="{logout}">
         <i class="glyphicon glyphicon-log-out"></i> 退出
     </span>
-
+    <a if="{user && user.username}" href="#" class="pull-right">
+        <i class="glyphicon glyphicon-user"></i> {user.username}
+    </a>
     <script>
         var self = this;
         self.login = function () {
