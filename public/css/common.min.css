@@ -1,0 +1,21 @@
+.loading,.model_message,footer{text-align:center}
+.model_message{position:fixed;z-index:9999;color:#fff;top:200px;width:100%}
+.model_message .message{width:auto;padding:20px 60px;background:rgba(0,0,0,.6);display:inline-block;border-radius:10px;font-size:20px}
+body{line-height:26px;font-size:14px}
+input[type=checkbox]{height:16px;width:16px;vertical-align:top;margin-right:3px;margin-top:5px}
+input,textarea{width:98%;border:1px solid #ccc;padding:5px;height:30px;line-height:30px;font-size:14px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
+textarea{min-height:100px}
+.main-box>menu ul li,.one-line{white-space:nowrap;overflow:hidden;-ms-text-overflow:ellipsis;text-overflow:ellipsis}
+body,html{height:100%}
+.main-box{padding:60px 0 0;overflow:hidden;min-height:100%;margin-bottom:-26px}
+.main-box>menu{width:150px;float:left;border-right:1px solid #ccc;margin:0;padding:5px 5px 20px 0}
+.main-box>menu .type{margin-top:14px;color:#fff;background:#666;padding-left:10px}
+.main-box>menu ul{padding:0;margin:0;list-style:none}
+.main-box>menu ul li{list-style:none;display:block}
+.main-box>menu ul li a{display:block;color:#333;text-decoration:none;padding-left:10px}
+.main-box>menu ul li a:hover{background:#129FEA;color:#fff;text-decoration:none}
+.main-box>menu ul li a.active{background:#3276b1;color:#fff}
+.main-box>.main{margin:10px 10px 10px 160px}
+.loading{font-size:24px;display:none}
+.removed{text-decoration:line-through}
+footer{background:#ADADAD}
