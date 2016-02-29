@@ -57,7 +57,7 @@ web.finish = function (e, callback) {
     } else {
         console.error('web.finish参数错误！');
     }
-    if (e.preventDefault) {
+    if (e.preventDefault && target.getAttribute('prevent')) {
         e.preventDefault();
     }
     return false;
