@@ -26,12 +26,15 @@
     </div>
     <div class="name">子任务：</div>
     <div class="children" if="{opts.data.name}">
-        <div each="{children}">
+        <div each="{children}" class="child">
             <input type="checkbox" value="" keep="true" onclick="{web.finish}" o_type="todo" o_id={objectId}
                    checked="{finish < now && finish != 0}">
 
             <div class="child-input">
                 <input type="text" value="{name}" o_id="{objectId}" o_type="todo" onkeyup="{keyup}">
+            </div>
+            <div class="buttons">
+                <div class="button"><i class="glyphicon glyphicon-trash"></i></div>
             </div>
         </div>
         <div>

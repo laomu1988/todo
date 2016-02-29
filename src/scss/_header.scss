@@ -7,11 +7,14 @@ header {
   color: #fff;
   position: fixed;
   width: 100%;
-  span {
+  span, a {
+    color: #fff;
     cursor: pointer;
     padding: 0 10px;
+    text-decoration: none;
     &:hover {
       color: #d58512;
+      text-decoration: none;
     }
   }
 }
