@@ -40,7 +40,7 @@
                 <input type="text" value="{name}" o_id="{objectId}" o_type="todo" onkeyup="{keyup}">
             </div>
             <div class="buttons">
-                <div class="button"><i class="glyphicon glyphicon-trash"></i></div>
+                <div class="button" onclick="{deleteTodo}" o_id="{objectId}"><i class="glyphicon glyphicon-trash"></i></div>
             </div>
         </div>
         <div>
@@ -136,27 +136,37 @@
                     }
                 }
                 else if (id) {
-                    web.confirm('删除后不能恢复，你确定要删除子任务吗?', function (data) {
-                        web.services.todo.remove(id, function (result) {
-                            if (result && result.code == 0) {
-                                for (var i = 0; i < self.children.length; i++) {
-                                    if (self.children[i].objectId == id) {
-                                        self.children.splice(i, 1);
-                                        self.update();
-                                        web.message('删除成功！');
-                                        return;
-                                    }
-                                }
-                            } else {
-                                web.message((result && result.message) || '删除失败！');
-                            }
-                        })
-                    });
+                    self.deleteTodo(id);
                 }
                 else {
                     web.message('不能为空！');
                 }
             }
+        }
+        self.deleteTodo = function(e){
+            var id = e;
+            if(e && e.target){
+                id = e.target.getAttribute('o_id');
+            }
+            if(!id){
+                return false;
+            }
+            web.confirm('删除后不能恢复，你确定要删除子任务吗?', function (data) {
+                web.services.todo.remove(id, function (result) {
+                    if (result && result.code == 0) {
+                        for (var i = 0; i < self.children.length; i++) {
+                            if (self.children[i].objectId == id) {
+                                self.children.splice(i, 1);
+                                self.update();
+                                web.message('删除成功！');
+                                return;
+                            }
+                        }
+                    } else {
+                        web.message((result && result.message) || '删除失败！');
+                    }
+                })
+            });
         }
     </script>
 </edit_todo>
