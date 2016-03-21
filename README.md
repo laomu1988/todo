@@ -9,7 +9,16 @@
 ## todo
 * 拖动修改任务开始时间和结束时间
 
+## 开发安装
+* nvm作为node版本管理工具
+* node4 ,node0.12
+* npm或者cnpm安装工具
+* 安装所有依赖module
+* npm install gulp -g -d
+* 安装npm install -g avoscloud-code -d
 
+- 修改后使用gulp命令打包（node0.12环境）
+- 执行avoscloud -h查询环境，启动服务器
 
 ## 已完成内容
 * 用户管理:注册,登录,退出,修改密码,修改信息

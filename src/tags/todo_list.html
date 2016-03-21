@@ -8,15 +8,12 @@
     -->
     <style>
         .todo {
-            border-bottom: 1px solid #ccc;
-            border-left: 5px solid #ccc;
-            padding-left: 5px;
-            margin-top: 5px;
+            border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px; min-height: 26px;
         }
 
-        .todo:hover {
-            background: #e8e8e8;
-        }
+        .todo.space { border: 0; }
+
+        .todo:hover { background: #e8e8e8; }
 
         .project, .pid {
             background: #666;
@@ -30,24 +27,56 @@
         }
 
         .dragover {
-            border-top: 26px #ccc solid;
+            border-top: 26px #ccc solid !important;
         }
     </style>
+<<<<<<< HEAD
     <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo"
          draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}"
+=======
+    <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo" weight="{prevWeight}"
+         draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}"
+         dragover_class="dragover" ondragleave="{web.ondragleave}"
+>>>>>>> origin/src
          name="{name}" class="todo">
         <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId}
-               checked="{finish < now && finish != 0}" if="{!removed}">
+               checked="{finish < now && finish != 0}" if="{!removed}" prevent="true">
         <span class="btn btn-warning btn-xs" o_type="todo" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span>
         <a if="{web._hashs.method !== 'project' && project && project.name }"
            href="#method=project&project={project.objectId}" class="project">[{project.name}]</a>
         <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}"
            o_type="todo">[{pid.name}]</a>
+<<<<<<< HEAD
         <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" class="{'removed':removed}">{name}</span>
+=======
+        <span onclick="{web.edit}" o_type="todo" o_id="{objectId}"
+              class="{'removed':removed}">{name}</span>
+        <span if="{children_num > 0}">[{children_finish}/{children_num}]</span>
+>>>>>>> origin/src
     </div>
+    <div o_type="todo" weight="{minWeight-1}" method="todo" class="todo space"
+         ondrop="{web.ondrop}" ondragover="{web.ondragover}"
+         dragover_class="dragover" ondragleave="{web.ondragleave}"></div>
     <script>
         var self = this;
         self.now = Date.now();
+        self.minWeight = 9999999999999, self.maxWeight = 0;
+        self.updateData = function () {
+            var list = self.opts.list;
+            var len = list.length;
+            for (var i = 0; i < list.length; i++) {
+                var weight = list[i].weight = parseFloat(list[i].weight || list[i].begin);
+                weight > self.maxWeight && (self.maxWeight = weight);
+                weight < self.minWeight && (self.minWeight = weight);
+            }
+            list.sort(function (a, b) {
+                return b.weight - a.weight;
+            });
+            for (var i = 0; i < len; i++) {
+                list[i].prevWeight = i == 0 ? list[i].weight + 0.5 : (list[i].weight + list[i - 1].weight) / 2;
+                console.log(list[i].name, list[i].weight);
+            }
+        };
         web.on('new_todo', function (data) {
             if (data && data.objectId) {
                 self.opts.list.unshift(data);
@@ -65,6 +94,11 @@
                     return;
                 }
             }
+        });
+        self.updateData();
+        web.on('change-weight', function (type, data) {
+            self.updateData();
+            self.update();
         });
     </script>
 </todo_list>

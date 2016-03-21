@@ -3,3 +3,4 @@ leanengine-todo-demo-master
 .idea
 node_modules
 public
+!public/lib
