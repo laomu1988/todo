@@ -7,14 +7,23 @@ header {
   color: #fff;
   position: fixed;
   width: 100%;
-  span, a {
+  z-index: 100;
+
+  a {
     color: #fff;
     cursor: pointer;
     padding: 0 10px;
     text-decoration: none;
+    &:focus {
+      color: #fff;
+    }
     &:hover {
       color: #d58512;
       text-decoration: none;
     }
+  }
+
+  .menu {
+    display: none;
   }
 }
