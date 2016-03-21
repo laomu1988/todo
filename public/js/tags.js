@@ -197,13 +197,16 @@ riot.tag('edit_todo', '<div class="name"> <input type="text" name="name" placeho
 riot.tag('header', '<a href="javascript:void(0)" onclick="{home}" class="home"><i class="glyphicon glyphicon-home"></i> <span>Todo</span></a> <a href="javascript:void(0)" onclick="{menu}" class="menu"><i class="glyphicon glyphicon-menu-hamburger"></i> <span>Todo</span></a> <a href="javascript:void(0)" class="pull-right" onclick="{login}" if="{!isLogin}"> <i class="glyphicon glyphicon-log-in"></i> <span>登录</span> </a> <a href="javascript:void(0)" class="pull-right" onclick="{register}" if="{!isLogin}"> <i class="glyphicon glyphicon-expand"></i> <span>注册</span> </a> <a href="javascript:void(0)" class="pull-right" if="{isLogin}" onclick="{logout}"> <i class="glyphicon glyphicon-log-out"></i> <span>退出</span> </a> <a if="{user && user.username}" href="javascript:void(0)" class="pull-right"> <i class="glyphicon glyphicon-user"></i> {user.username} </a>', function(opts) {
         var self = this;
         self.home = function () {
-            location.herf = 'index.html';
+            location.herf = '#';
         };
         self.menu = function () {
-            $('.main-box > menu').fadeIn().css('marginLeft', 0).click(function () {
-                $(this).css('marginLeft', -160);
-            });
+            $('.main-box > menu').addClass('show');
         };
+        $('body').click(function (e) {
+            if ($(e.target).parent('.menu').length == 0) {
+                $('.main-box > menu').removeClass('show');
+            }
+        });
         self.login = function () {
             web.mount('login');
         };
