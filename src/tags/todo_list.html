@@ -8,12 +8,20 @@
     -->
     <style>
         .todo {
-            border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px; min-height: 26px;
+            border-bottom: 1px solid #ccc;
+            border-left: 5px solid #ccc;
+            padding-left: 5px;
+            margin-top: 5px;
+            min-height: 26px;
         }
 
-        .todo.space { border: 0; }
+        .todo.space {
+            border: 0;
+        }
 
-        .todo:hover { background: #e8e8e8; }
+        .todo:hover {
+            background: #e8e8e8;
+        }
 
         .project, .pid {
             background: #666;
@@ -30,14 +38,9 @@
             border-top: 26px #ccc solid !important;
         }
     </style>
-<<<<<<< HEAD
-    <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo"
-         draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}"
-=======
     <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo" weight="{prevWeight}"
          draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}"
          dragover_class="dragover" ondragleave="{web.ondragleave}"
->>>>>>> origin/src
          name="{name}" class="todo">
         <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id={objectId}
                checked="{finish < now && finish != 0}" if="{!removed}" prevent="true">
@@ -46,13 +49,9 @@
            href="#method=project&project={project.objectId}" class="project">[{project.name}]</a>
         <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}"
            o_type="todo">[{pid.name}]</a>
-<<<<<<< HEAD
-        <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" class="{'removed':removed}">{name}</span>
-=======
         <span onclick="{web.edit}" o_type="todo" o_id="{objectId}"
               class="{'removed':removed}">{name}</span>
         <span if="{children_num > 0}">[{children_finish}/{children_num}]</span>
->>>>>>> origin/src
     </div>
     <div o_type="todo" weight="{minWeight-1}" method="todo" class="todo space"
          ondrop="{web.ondrop}" ondragover="{web.ondragover}"
