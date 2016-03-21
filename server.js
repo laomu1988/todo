@@ -53,4 +53,4 @@ app.listen(PORT, function () {
     console.log('Node app is running, port:', PORT);
 });
 
-require('./cloud/temp_task.js');
+// require('./cloud/temp_task.js');
