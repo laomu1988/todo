@@ -2,5 +2,5 @@ LeanEngine-Full-Stack-master
 leanengine-todo-demo-master
 .idea
 node_modules
-public
+public/*
 !public/lib
