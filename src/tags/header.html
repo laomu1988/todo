@@ -24,7 +24,7 @@
             $('.main-box > menu').addClass('show');
         };
         $('body').click(function (e) {
-            if ($(e.target).parent('.menu').length == 0 || $(e.target).hasClass('menu')) {
+            if ($(e.target).parent('.menu').length == 0 && !$(e.target).hasClass('menu')) {
                 $('.main-box > menu').removeClass('show');
             }
         });
