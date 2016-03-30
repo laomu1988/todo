@@ -203,7 +203,7 @@ riot.tag('header', '<a href="javascript:void(0)" onclick="{home}" class="home"><
             $('.main-box > menu').addClass('show');
         };
         $('body').click(function (e) {
-            if ($(e.target).parent('.menu').length == 0) {
+            if ($(e.target).parent('.menu').length == 0 && !$(e.target).hasClass('menu')) {
                 $('.main-box > menu').removeClass('show');
             }
         });
