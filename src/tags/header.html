@@ -43,6 +43,13 @@
         self.register = function () {
             web.mount('register');
         };
+        web.services.user.info(function (result) {
+            if (result && result.code === 0 && result.data) {
+                self.user = result.data;
+                self.isLogin = !!self.user;
+                self.update();
+            }
+        });
         self.user = web.getUser();
         self.isLogin = !!self.user;
         web.on('login', function () {
