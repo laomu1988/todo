@@ -13,6 +13,7 @@
             padding-left: 5px;
             margin-top: 5px;
             min-height: 26px;
+            line-height: 26px;
         }
 
         .todo.space {
@@ -37,6 +38,16 @@
         .dragover {
             border-top: 26px #ccc solid !important;
         }
+
+        .edit, .remove {
+            float: right; line-height: 26px; padding: 0 6px; color: #999; cursor: pointer; display: none;
+        }
+
+        .todo:hover .edit, .todo:hover .remove {
+            display: inline-block;
+        }
+
+
     </style>
     <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo" weight="{prevWeight}"
          draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}"
@@ -52,6 +63,8 @@
         <span onclick="{web.edit}" o_type="todo" o_id="{objectId}"
               class="{'removed':removed}">{name}</span>
         <span if="{children_num > 0}">[{children_finish}/{children_num}]</span>
+        <span class="glyphicon glyphicon-trash remove" onclick="{web.remove}" o_type="todo" o_id="{objectId}"></span>
+        <span class="glyphicon glyphicon-pencil edit" onclick="{web.edit}" o_type="todo" o_id="{objectId}"></span>
     </div>
     <div o_type="todo" weight="{minWeight-1}" method="todo" class="todo space"
          ondrop="{web.ondrop}" ondragover="{web.ondragover}"
@@ -99,6 +112,8 @@
             self.updateData();
             self.update();
         });
+
+
     </script>
 </todo_list>
 
