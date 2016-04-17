@@ -55,7 +55,7 @@ web.ajax = function (type, page, data, callback) {
         dataType: 'json',
         success: function (result) {
             if (result) {
-                result._ajax = {type: type, page: page, data: data};
+                result.ajax_data = {type: type, data: data, page: page};
             }
             web.config.onAjaxload && web.config.onAjaxload(result);
             callback(result);
@@ -64,6 +64,7 @@ web.ajax = function (type, page, data, callback) {
             console.log(err);
             // todo: delete
             callback({
+                ajax_data: {type: type, data: data, page: page},
                 errno: 405,
                 message: '系统错误，请稍候再试.',
                 errmsg: '系统错误，请稍候再试'
@@ -92,6 +93,9 @@ web.services = {
         logout: function (data, callback) {
             web.setCookie('user', '');
             web.get('user/logout', data, callback);
+        },
+        info: function (data, callback) {
+            web.get('user/info', data, callback);
         }
     },
     todo: {
@@ -971,6 +975,27 @@ web.edit = function (e) {
     }
 };
 
+web.remove = function (e, callback) {
+    var target = e.currentTarget || e.target || e;
+    if (target.getAttribute) {
+        var type = target.getAttribute('o_type') || 'todo';
+        web.services[type].remove(target.getAttribute('o_id'), function (result) {
+            if (result && result.code == 0 && result.data) {
+                web.message('删除成功！');
+                if (typeof callback === 'function') {
+                    callback();
+                } else {
+                    $(target).parent().fadeOut();
+                }
+            } else {
+                web.errmsg(result, '操作失败！')
+            }
+        });
+    } else {
+        console.error('web.remove参数错误！');
+    }
+};
+
 web.unremove = function (e) {
     var target = e.currentTarget || e.target || e;
     if (target.getAttribute) {
@@ -978,7 +1003,11 @@ web.unremove = function (e) {
         web.services[type].unremove(target.getAttribute('o_id'), function (result) {
             if (result && result.code == 0 && result.data) {
                 web.message('取消删除成功！');
-                $(target).parent().fadeOut();
+                if (typeof callback === 'function') {
+                    callback();
+                } else {
+                    $(target).parent().fadeOut();
+                }
             } else {
                 web.errmsg(result, '操作失败！')
             }

@@ -77,7 +77,7 @@ riot.tag('edit_project', '<div class="name"> <input type="text" name="name" plac
         }
     
 });
-riot.tag('edit_todo', '<div class="name"> <input type="text" name="name" placeholder="任务名称" value="{opts.data.name}"> </div> <div> <textarea type="text" name="detail" placeholder="任务详情">{opts.data.detail}</textarea> </div> <div class="name">子任务：</div> <div class="children" if="{opts.data.name}"> <div each="{children}" class="child"> <input type="checkbox" value="" keep="true" onclick="{web.finish}" o_type="todo" o_id="{objectId}" __checked="{finish < now && finish != 0}"> <div class="child-input"> <input type="text" value="{name}" o_id="{objectId}" o_type="todo" onkeyup="{keyup}"> </div> <div class="buttons"> <div class="button" onclick="{deleteTodo}" o_id="{objectId}"><i class="glyphicon glyphicon-trash"></i></div> </div> </div> <div> <input type="text" value="" placeholder="输入后回车添加子任务" onkeyup="{keyup}"> </div> </div> <div class="">子任务，时间，状态</div> <div class="bottom"> <div class="btn btn-cancel" onclick="{cancel}">取消</div> <div class="btn btn-primary" onclick="{submit}">确定</div> </div>', '[riot-tag=edit_todo] .name,edit_todo .name{ margin-bottom: 10px;} [riot-tag=edit_todo] .bottom,edit_todo .bottom{ text-align: right;} [riot-tag=edit_todo] .children input[type=checkbox],edit_todo .children input[type=checkbox]{ float: left;} [riot-tag=edit_todo] .children .child-input,edit_todo .children .child-input{ margin-left: 20px;} [riot-tag=edit_todo] .children .child-input input,edit_todo .children .child-input input{ border: 0; line-height: 26px; height: 26px;} [riot-tag=edit_todo] .child,edit_todo .child{ position: relative;} [riot-tag=edit_todo] .buttons,edit_todo .buttons{ position: absolute; right: 14px; top: 0;}', function(opts) {
+riot.tag('edit_todo', '<div class="name"> <input type="text" name="name" placeholder="任务名称" value="{opts.data.name}"> </div> <div> <textarea type="text" name="detail" placeholder="任务详情">{opts.data.detail}</textarea> </div> <div class="name">子任务：</div> <div class="children" if="{opts.data.name}"> <div each="{children}" class="child"> <input type="checkbox" value="" keep="true" onclick="{web.finish}" o_type="todo" o_id="{objectId}" __checked="{finish < now && finish != 0}"> <div class="child-input"> <input type="text" value="{name}" o_id="{objectId}" o_type="todo" onkeyup="{keyup}"> </div> <div class="buttons"> <div class="button" onclick="{deleteTodo}" o_type="todo" o_id="{objectId}"><i class="glyphicon glyphicon-trash"></i></div> </div> </div> <div> <input type="text" value="" placeholder="输入后回车添加子任务" onkeyup="{keyup}"> </div> </div> <div class="">子任务，时间，状态</div> <div class="bottom"> <div class="btn btn-warning glyphicon glyphicon-trash" onclick="{remove}" if="{isEdit}" o_type="todo" o_id="{data.objectId}"></div> <div class="btn btn-cancel" onclick="{cancel}">取消</div> <div class="btn btn-primary" onclick="{submit}">确定</div> </div>', '[riot-tag=edit_todo] .name,edit_todo .name{ margin-bottom: 10px;} [riot-tag=edit_todo] .bottom,edit_todo .bottom{ text-align: right;} [riot-tag=edit_todo] .children input[type=checkbox],edit_todo .children input[type=checkbox]{ float: left;} [riot-tag=edit_todo] .children .child-input,edit_todo .children .child-input{ margin-left: 20px;} [riot-tag=edit_todo] .children .child-input input,edit_todo .children .child-input input{ border: 0; line-height: 26px; height: 26px;} [riot-tag=edit_todo] .child,edit_todo .child{ position: relative;} [riot-tag=edit_todo] .buttons,edit_todo .buttons{ position: absolute; right: 14px; top: 0;} [riot-tag=edit_todo] .btn-warning,edit_todo .btn-warning{ float: left;}', function(opts) {
         var self = this;
         self.data = self.opts.data;
         self.isEdit = !!self.opts.data && !!self.opts.data.objectId;
@@ -166,13 +166,20 @@ riot.tag('edit_todo', '<div class="name"> <input type="text" name="name" placeho
                     web.message('不能为空！');
                 }
             }
+        };
+
+        self.remove = function (e) {
+            web.remove(e, function () {
+                self.cancel();
+            });
         }
-        self.deleteTodo = function(e){
+
+        self.deleteTodo = function (e) {
             var id = e;
-            if(e && e.target){
-                id = e.target.getAttribute('o_id');
+            if (e && e.target) {
+                id = (e.currentTarget || e.target).getAttribute('o_id');
             }
-            if(!id){
+            if (!id) {
                 return false;
             }
             web.confirm('删除后不能恢复，你确定要删除子任务吗?', function (data) {
@@ -222,6 +229,13 @@ riot.tag('header', '<a href="javascript:void(0)" onclick="{home}" class="home"><
         self.register = function () {
             web.mount('register');
         };
+        web.services.user.info(function (result) {
+            if (result && result.code === 0 && result.data) {
+                self.user = result.data;
+                self.isLogin = !!self.user;
+                self.update();
+            }
+        });
         self.user = web.getUser();
         self.isLogin = !!self.user;
         web.on('login', function () {
@@ -457,7 +471,7 @@ riot.tag('today', '', function(opts) {
 
 
 });
-riot.tag('todo_list', ' <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo" weight="{prevWeight}" draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}" dragover_class="dragover" ondragleave="{web.ondragleave}" name="{name}" class="todo"> <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id="{objectId}" __checked="{finish < now && finish != 0}" if="{!removed}" prevent="true"> <span class="btn btn-warning btn-xs" o_type="todo" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span> <a if="{web._hashs.method !== \'project\' && project && project.name }" href="#method=project&project={project.objectId}" class="project">[{project.name}]</a> <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}" o_type="todo">[{pid.name}]</a> <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" class="{\'removed\':removed}">{name}</span> <span if="{children_num > 0}">[{children_finish}/{children_num}]</span> </div> <div o_type="todo" weight="{minWeight-1}" method="todo" class="todo space" ondrop="{web.ondrop}" ondragover="{web.ondragover}" dragover_class="dragover" ondragleave="{web.ondragleave}"></div>', '[riot-tag=todo_list] .todo,todo_list .todo{ border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px; min-height: 26px;} [riot-tag=todo_list] .todo.space,todo_list .todo.space{ border: 0;} [riot-tag=todo_list] .todo:hover,todo_list .todo:hover{ background: #e8e8e8;} [riot-tag=todo_list] .project,todo_list .project, [riot-tag=todo_list] .pid,todo_list .pid{ background: #666; color: #fff; padding: 3px 4px; border-radius: 3px;} [riot-tag=todo_list] .pid,todo_list .pid{ background: #ADADAD;} [riot-tag=todo_list] .dragover,todo_list .dragover{ border-top: 26px #ccc solid !important;}', function(opts) {
+riot.tag('todo_list', ' <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo" weight="{prevWeight}" draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}" dragover_class="dragover" ondragleave="{web.ondragleave}" name="{name}" class="todo"> <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id="{objectId}" __checked="{finish < now && finish != 0}" if="{!removed}" prevent="true"> <span class="btn btn-warning btn-xs" o_type="todo" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span> <a if="{web._hashs.method !== \'project\' && project && project.name }" href="#method=project&project={project.objectId}" class="project">[{project.name}]</a> <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}" o_type="todo">[{pid.name}]</a> <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" class="{\'removed\':removed}">{name}</span> <span if="{children_num > 0}">[{children_finish}/{children_num}]</span> <span class="glyphicon glyphicon-trash remove" onclick="{web.remove}" o_type="todo" o_id="{objectId}"></span> <span class="glyphicon glyphicon-pencil edit" onclick="{web.edit}" o_type="todo" o_id="{objectId}"></span> </div> <div o_type="todo" weight="{minWeight-1}" method="todo" class="todo space" ondrop="{web.ondrop}" ondragover="{web.ondragover}" dragover_class="dragover" ondragleave="{web.ondragleave}"></div>', '[riot-tag=todo_list] .todo,todo_list .todo{ border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px; min-height: 26px; line-height: 26px;} [riot-tag=todo_list] .todo.space,todo_list .todo.space{ border: 0;} [riot-tag=todo_list] .todo:hover,todo_list .todo:hover{ background: #e8e8e8;} [riot-tag=todo_list] .project,todo_list .project, [riot-tag=todo_list] .pid,todo_list .pid{ background: #666; color: #fff; padding: 3px 4px; border-radius: 3px;} [riot-tag=todo_list] .pid,todo_list .pid{ background: #ADADAD;} [riot-tag=todo_list] .dragover,todo_list .dragover{ border-top: 26px #ccc solid !important;} [riot-tag=todo_list] .edit,todo_list .edit, [riot-tag=todo_list] .remove,todo_list .remove{ float: right; line-height: 26px; padding: 0 6px; color: #999; cursor: pointer; display: none;} [riot-tag=todo_list] .todo:hover .edit,todo_list .todo:hover .edit, [riot-tag=todo_list] .todo:hover .remove,todo_list .todo:hover .remove{ display: inline-block;}', function(opts) {
         var self = this;
         self.now = Date.now();
         self.minWeight = 9999999999999, self.maxWeight = 0;
@@ -500,6 +514,8 @@ riot.tag('todo_list', ' <div each="{opts.list}" o_type="todo" o_id="{objectId}" 
             self.updateData();
             self.update();
         });
+
+
     
 });
 

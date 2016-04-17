@@ -18,7 +18,7 @@ web.ajax = function (type, page, data, callback) {
         dataType: 'json',
         success: function (result) {
             if (result) {
-                result._ajax = {type: type, page: page, data: data};
+                result.ajax_data = {type: type, data: data, page: page};
             }
             web.config.onAjaxload && web.config.onAjaxload(result);
             callback(result);
@@ -27,6 +27,7 @@ web.ajax = function (type, page, data, callback) {
             console.log(err);
             // todo: delete
             callback({
+                ajax_data: {type: type, data: data, page: page},
                 errno: 405,
                 message: '系统错误，请稍候再试.',
                 errmsg: '系统错误，请稍候再试'
@@ -55,6 +56,9 @@ web.services = {
         logout: function (data, callback) {
             web.setCookie('user', '');
             web.get('user/logout', data, callback);
+        },
+        info: function (data, callback) {
+            web.get('user/info', data, callback);
         }
     },
     todo: {
