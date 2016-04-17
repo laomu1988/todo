@@ -23,6 +23,8 @@
         .buttons { position: absolute;
             right: 14px;
             top: 0; }
+
+        .btn-warning { float: left; }
     </style>
     <div class="name">
         <input type="text" name="name" placeholder="任务名称" value="{opts.data.name}">
@@ -40,7 +42,8 @@
                 <input type="text" value="{name}" o_id="{objectId}" o_type="todo" onkeyup="{keyup}">
             </div>
             <div class="buttons">
-                <div class="button" onclick="{deleteTodo}" o_id="{objectId}"><i class="glyphicon glyphicon-trash"></i></div>
+                <div class="button" onclick="{deleteTodo}" o_type="todo" o_id="{objectId}"><i
+                        class="glyphicon glyphicon-trash"></i></div>
             </div>
         </div>
         <div>
@@ -49,6 +52,8 @@
     </div>
     <div class="">子任务，时间，状态</div>
     <div class="bottom">
+        <div class="btn btn-warning glyphicon glyphicon-trash" onclick="{remove}" if="{isEdit}" o_type="todo"
+             o_id="{data.objectId}"></div>
         <div class="btn btn-cancel" onclick="{cancel}">取消</div>
         <div class="btn btn-primary" onclick="{submit}">确定</div>
     </div>
@@ -142,13 +147,20 @@
                     web.message('不能为空！');
                 }
             }
+        };
+        // 删除自身
+        self.remove = function (e) {
+            web.remove(e, function () {
+                self.cancel();
+            });
         }
-        self.deleteTodo = function(e){
+        // 删除子任务
+        self.deleteTodo = function (e) {
             var id = e;
-            if(e && e.target){
-                id = e.target.getAttribute('o_id');
+            if (e && e.target) {
+                id = (e.currentTarget || e.target).getAttribute('o_id');
             }
-            if(!id){
+            if (!id) {
                 return false;
             }
             web.confirm('删除后不能恢复，你确定要删除子任务吗?', function (data) {

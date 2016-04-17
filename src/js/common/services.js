@@ -9,6 +9,9 @@ web.services = {
         logout: function (data, callback) {
             web.setCookie('user', '');
             web.get('user/logout', data, callback);
+        },
+        info: function (data, callback) {
+            web.get('user/info', data, callback);
         }
     },
     todo: {

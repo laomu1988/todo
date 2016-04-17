@@ -79,6 +79,27 @@ web.edit = function (e) {
     }
 };
 
+web.remove = function (e, callback) {
+    var target = e.currentTarget || e.target || e;
+    if (target.getAttribute) {
+        var type = target.getAttribute('o_type') || 'todo';
+        web.services[type].remove(target.getAttribute('o_id'), function (result) {
+            if (result && result.code == 0 && result.data) {
+                web.message('删除成功！');
+                if (typeof callback === 'function') {
+                    callback();
+                } else {
+                    $(target).parent().fadeOut();
+                }
+            } else {
+                web.errmsg(result, '操作失败！')
+            }
+        });
+    } else {
+        console.error('web.remove参数错误！');
+    }
+};
+
 web.unremove = function (e) {
     var target = e.currentTarget || e.target || e;
     if (target.getAttribute) {
@@ -86,7 +107,11 @@ web.unremove = function (e) {
         web.services[type].unremove(target.getAttribute('o_id'), function (result) {
             if (result && result.code == 0 && result.data) {
                 web.message('取消删除成功！');
-                $(target).parent().fadeOut();
+                if (typeof callback === 'function') {
+                    callback();
+                } else {
+                    $(target).parent().fadeOut();
+                }
             } else {
                 web.errmsg(result, '操作失败！')
             }
