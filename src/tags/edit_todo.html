@@ -23,6 +23,8 @@
         .buttons { position: absolute;
             right: 14px;
             top: 0; }
+
+        .btn-warning { float: left; }
     </style>
     <div class="name">
         <input type="text" name="name" placeholder="任务名称" value="{opts.data.name}">
@@ -50,6 +52,8 @@
     </div>
     <div class="">子任务，时间，状态</div>
     <div class="bottom">
+        <div class="btn btn-warning glyphicon glyphicon-trash" onclick="{remove}" if="{isEdit}" o_type="todo"
+             o_id="{data.objectId}"></div>
         <div class="btn btn-cancel" onclick="{cancel}">取消</div>
         <div class="btn btn-primary" onclick="{submit}">确定</div>
     </div>
@@ -144,6 +148,13 @@
                 }
             }
         };
+        // 删除自身
+        self.remove = function (e) {
+            web.remove(e, function () {
+                self.cancel();
+            });
+        }
+        // 删除子任务
         self.deleteTodo = function (e) {
             var id = e;
             if (e && e.target) {
