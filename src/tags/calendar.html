@@ -1,0 +1,119 @@
+<calendar>
+    <!--按照日历格式显示，不计算时长，只按照开始时间或者结束时间显示-->
+    <style>
+        .container {
+            display: flex;
+        }
+
+        .col {
+            flex: 1;
+            -webkit-flex: 1;
+        }
+
+    </style>
+    <!--按照统计时间显示任务-->
+    <div class="timeline">
+        <span onclick="{prev}">上一周</span>时间统计表<span onclick="{next}">下一周</span>
+    </div>
+    <div class="container">
+        <span class="col">日</span>
+        <span class="col">一</span>
+        <span class="col">二</span>
+        <span class="col">三</span>
+        <span class="col">四</span>
+        <span class="col">五</span>
+        <span class="col">六</span>
+    </div>
+    <div class="container">
+        <div class="col" each="{list in dayTodo}">
+            <todo_list list="{list}"/>
+        </div>
+    </div>
+    <script>
+        var self = this;
+        var len = 24 * 60 * 60 * 1000 * 7;
+        var sign = web._hashs.sign || 'week';
+        self.date = parseInt(web._hashs.date) || Date.now();
+        self.now = Date.now();
+        var date = web.getWeekRange(self.date);
+
+        date.order = 'begin,finish';
+        date.flag = 'begin';
+        self.begin = date.begin;
+        self.finish = date.finish;
+        self.len = self.finish - self.begin;
+        self.blockNum = 7;
+        self.block = self.len / self.blockNum; //每一块代表的时间刻度
+        self.dayTodo = []; // 一天的任务
+        for (var i = self.blockNum; i > 0; i--) {
+            self.dayTodo.push([]);
+        }
+
+        web.services.todo.list(date, function (data) {
+            if (data && data.code == 0 && data.data) {
+                self.list = data.data.results;
+                if (self.list.length > 0) {
+                    self.list.forEach(function (todo) {
+                        //计算该todo是哪一天的
+                        var day = parseInt((todo.begin - self.begin) / self.block);
+                        if (self.dayTodo[day]) {
+                            self.dayTodo[day].push(todo);
+                        } else {
+                            console.log('未知天数：', day, todo);
+                        }
+                    });
+                }
+                console.log(self.dayTodo);
+                self.update();
+            }
+        });
+
+        self.prev = function () {
+            location.href = '#method=' + web._hashs.method + '&sign=w&date=' + (self.date - len);
+        };
+
+        self.next = function () {
+            location.href = '#method=' + web._hashs.method + '&sign=w&date=' + (self.date + len);
+        };
+
+        self.ondrop = function (e) {
+            console.log('calendar ondrop');
+            return false;
+            var blockWidth = $(e.target).width() / self.blockNum;
+            var nowPlace = Math.floor(e.offsetX / blockWidth);
+            var drag = web._drag;
+            var todo = web._todos[drag.getAttribute('o_id')];
+            if (todo) {
+                var add = (nowPlace - todo.beginNum) * self.block;
+
+                todo.begin += add;
+                if (todo.finish) {
+                    todo.finish += add;
+                }
+                console.log({
+                    id: todo.objectId,
+                    begin: todo.begin + add,
+                    finish: todo.finish > 0 ? todo.finish + add : 0
+                });
+                todo.beginNum = nowPlace;
+                web.message('修改成功！');
+                $(drag).parent().css('left', todo.beginNum * self.blockWidth + '%');
+
+                return;
+                web.services.todo.edit({
+                    id: todo.objectId,
+                    begin: todo.begin + add,
+                    finish: todo.finish > 0 ? todo.finish + add : 0
+                }, function (data) {
+                    if (data && data.code == 0) {
+                        todo.beginNum = nowPlace;
+                        web.message('修改成功！');
+                        $(drag).parent().css('left', todo.beginNum * self.blockWidth + '%');
+                    } else {
+                        web.message('修改失败！');
+                    }
+                });
+            }
+        }
+    </script>
+</calendar>

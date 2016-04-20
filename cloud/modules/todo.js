@@ -125,7 +125,18 @@ module.exports = {
         if (data.begin && data.finish) {
             data.begin = parseInt(data.begin);
             data.finish = parseInt(data.finish);
-            sql += ' and  begin <=' + data.finish + ' and (finish = 0 or finish >= ' + data.begin + ')';
+
+            if (data.flag == 'begin') {
+                // 这个时间段开始的任务
+                sql += ' and begin >= ' + data.begin + ' and begin <= ' + data.finish;
+            }
+            else if (data.flag === 'finish') {
+                // 这个时间段结束的任务
+                sql += ' and finish >= ' + data.begin + ' and finish <= ' + data.finish;
+            } else {
+                // 任务经过这个时间段
+                sql += ' and  begin <=' + data.finish + ' and (finish = 0 or finish >= ' + data.begin + ')';
+            }
         }
         if (data.order) {
             sql += ' order by ' + data.order;
