@@ -24,7 +24,7 @@
             <a href="#method=today" class="{active: method == 'todo'}"><i class="glyphicon glyphicon-star"></i> 今日待办</a>
         </li>
         <li>
-            <a href="#method=timeline"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li>
+            <a href="#method=calendar"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li>
     </ul>
     <div if="{projects && projects.length > 0}" class="type">项目</div>
     <ul>
@@ -69,5 +69,9 @@
             self.updateMenu();
         });
         riot.route(self.updateMenu);
+
+        self.on('mount', function () {
+
+        });
     </script>
 </menu>

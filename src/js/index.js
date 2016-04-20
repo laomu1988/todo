@@ -33,6 +33,10 @@ $(function () {
                 loading.hide();
                 riot.mount('view', 'view-removed', {});
                 break;
+            case 'calendar':
+                loading.hide();
+                riot.mount('view', 'calendar', {});
+                break;
             case 'timeline':
                 loading.hide();
                 riot.mount('view', 'timeline', {});

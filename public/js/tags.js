@@ -1,4 +1,92 @@
 /** ----- created by gulp-riot-css -----*/
+riot.tag('calendar', '  <div class="timeline"> <span onclick="{prev}">上一周</span>时间统计表<span onclick="{next}">下一周</span> </div> <div class="container"> <span class="col">日</span> <span class="col">一</span> <span class="col">二</span> <span class="col">三</span> <span class="col">四</span> <span class="col">五</span> <span class="col">六</span> </div> <div class="container"> <div class="col" each="{list in dayTodo}"> <todo_list list="{list}"> </todo_list></div> </div>', '[riot-tag=calendar] .container,calendar .container{ display: flex;} [riot-tag=calendar] .col,calendar .col{ flex: 1; -webkit-flex: 1;}', function(opts) {
+        var self = this;
+        var len = 24 * 60 * 60 * 1000 * 7;
+        var sign = web._hashs.sign || 'week';
+        self.date = parseInt(web._hashs.date) || Date.now();
+        self.now = Date.now();
+        var date = web.getWeekRange(self.date);
+
+        date.order = 'begin,finish';
+        date.flag = 'begin';
+        self.begin = date.begin;
+        self.finish = date.finish;
+        self.len = self.finish - self.begin;
+        self.blockNum = 7;
+        self.block = self.len / self.blockNum; //每一块代表的时间刻度
+        self.dayTodo = []; // 一天的任务
+        for (var i = self.blockNum; i > 0; i--) {
+            self.dayTodo.push([]);
+        }
+
+        web.services.todo.list(date, function (data) {
+            if (data && data.code == 0 && data.data) {
+                self.list = data.data.results;
+                if (self.list.length > 0) {
+                    self.list.forEach(function (todo) {
+
+                        var day = parseInt((todo.begin - self.begin) / self.block);
+                        if (self.dayTodo[day]) {
+                            self.dayTodo[day].push(todo);
+                        } else {
+                            console.log('未知天数：', day, todo);
+                        }
+                    });
+                }
+                console.log(self.dayTodo);
+                self.update();
+            }
+        });
+
+        self.prev = function () {
+            location.href = '#method=' + web._hashs.method + '&sign=w&date=' + (self.date - len);
+        };
+
+        self.next = function () {
+            location.href = '#method=' + web._hashs.method + '&sign=w&date=' + (self.date + len);
+        };
+
+        self.ondrop = function (e) {
+            console.log('calendar ondrop');
+            return false;
+            var blockWidth = $(e.target).width() / self.blockNum;
+            var nowPlace = Math.floor(e.offsetX / blockWidth);
+            var drag = web._drag;
+            var todo = web._todos[drag.getAttribute('o_id')];
+            if (todo) {
+                var add = (nowPlace - todo.beginNum) * self.block;
+
+                todo.begin += add;
+                if (todo.finish) {
+                    todo.finish += add;
+                }
+                console.log({
+                    id: todo.objectId,
+                    begin: todo.begin + add,
+                    finish: todo.finish > 0 ? todo.finish + add : 0
+                });
+                todo.beginNum = nowPlace;
+                web.message('修改成功！');
+                $(drag).parent().css('left', todo.beginNum * self.blockWidth + '%');
+
+                return;
+                web.services.todo.edit({
+                    id: todo.objectId,
+                    begin: todo.begin + add,
+                    finish: todo.finish > 0 ? todo.finish + add : 0
+                }, function (data) {
+                    if (data && data.code == 0) {
+                        todo.beginNum = nowPlace;
+                        web.message('修改成功！');
+                        $(drag).parent().css('left', todo.beginNum * self.blockWidth + '%');
+                    } else {
+                        web.message('修改失败！');
+                    }
+                });
+            }
+        }
+    
+});
 riot.tag('dialog', ' <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> <h4 class="modal-title" id="mySmallModalLabel" if="{opts.data.title}">{opts.data.title}</h4> </div> <div class="modal-body">{opts.data.message} </div> <div class="modal-footer" if="{hasBtn}"> <button type="button" class="btn btn-seconary" if="{quit}" onclick="{quit}">取消</button> <button type="submit" class="btn btn-primary" onclick="{callback}">确定</button> </div> </div> </div> </div>', function(opts) {
         var self = this;
         self.hide = function () {
@@ -289,7 +377,7 @@ riot.tag('main', '<menu></menu> <div class="main"> <div class="loading"><i class
 
     
 });
-riot.tag('menu', ' <div class="type">新建</div> <ul> <li><a href="javascript:void(0)" onclick="{web.new_todo}"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li> <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i> 新项目</a></li>  </ul> <div class="type">查看</div> <ul> <li> <a href="#method=today" class="{active: method == \'todo\'}"><i class="glyphicon glyphicon-star"></i> 今日待办</a> </li> <li> <a href="#method=timeline"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li> </ul> <div if="{projects && projects.length > 0}" class="type">项目</div> <ul> <li each="{projects}"> <a href="#method=project&project={objectId}" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="project" class="{active: method == \'project\' && web._hashs.project == objectId}" ondragstart="{web.ondrag}" draggable="true" o_type="project" o_id="{objectId}"><i class="glyphicon glyphicon-list"></i> {name}</a></li> </ul> <div class="type">状态</div> <ul> <li> <a href="#method=finished" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="finished" class="{active: method == \'finished\'}"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li> <li> <a href="#method=removed" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="removed" class="{active: method == \'removed\'}"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li> </ul>', function(opts) {
+riot.tag('menu', ' <div class="type">新建</div> <ul> <li><a href="javascript:void(0)" onclick="{web.new_todo}"><i class="glyphicon glyphicon-plus"></i> 新任务</a></li> <li><a href="javascript:void(0)" onclick="{web.new_project}"><i class="glyphicon glyphicon-list-alt"></i> 新项目</a></li>  </ul> <div class="type">查看</div> <ul> <li> <a href="#method=today" class="{active: method == \'todo\'}"><i class="glyphicon glyphicon-star"></i> 今日待办</a> </li> <li> <a href="#method=calendar"><i class="glyphicon glyphicon-calendar"></i> 日历</a></li> </ul> <div if="{projects && projects.length > 0}" class="type">项目</div> <ul> <li each="{projects}"> <a href="#method=project&project={objectId}" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="project" class="{active: method == \'project\' && web._hashs.project == objectId}" ondragstart="{web.ondrag}" draggable="true" o_type="project" o_id="{objectId}"><i class="glyphicon glyphicon-list"></i> {name}</a></li> </ul> <div class="type">状态</div> <ul> <li> <a href="#method=finished" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="finished" class="{active: method == \'finished\'}"><i class="glyphicon glyphicon-ok"></i> 已完成</a></li> <li> <a href="#method=removed" ondragover="{web.ondragover}" ondrop="{web.ondrop}" method="removed" class="{active: method == \'removed\'}"><i class="glyphicon glyphicon-trash"></i> 已删除</a></li> </ul>', function(opts) {
         var self = this;
         self.method = web._hashs.method || 'todo';
         self.projects = [];
@@ -310,6 +398,10 @@ riot.tag('menu', ' <div class="type">新建</div> <ul> <li><a href="javascript:v
             self.updateMenu();
         });
         riot.route(self.updateMenu);
+
+        self.on('mount', function () {
+
+        });
     
 });
 riot.tag('project-list', '<div each="{opts.list}" o_type="todo" o_id="{objectId}" draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" method="todo" name="{name}" class="todo"> <input type="checkbox" value="" onclick="{web.finish}" o_type="project" o_id="{objectId}" __checked="{finish < now && finish != 0}" if="{!removed}"> <i class="glyphicon glyphicon-list"></i> <span class="btn btn-warning btn-xs" o_type="project" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span> <a href="#method=project&project={objectId}" o_type="project" o_id="{objectId}" ondragover="{web.ondragover}" class="{\'removed\':removed}">{name}</a> </div>', '[riot-tag=project-list] .todo,project-list .todo{ border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px;} [riot-tag=project-list] .todo:hover,project-list .todo:hover{ background: #e8e8e8;} [riot-tag=project-list] .project,project-list .project, [riot-tag=project-list] .pid,project-list .pid{ background: #666; color: #fff; padding: 3px 4px; border-radius: 3px;} [riot-tag=project-list] .pid,project-list .pid{ background: #ADADAD;}', function(opts) {
@@ -354,7 +446,7 @@ riot.tag('register', '<div class="modal"> <div class="modal-dialog"> <div class=
         })
     
 });
-riot.tag('timeline', ' <div class="timeline"> <span onclick="{prev}">上一周</span>时间统计表<span onclick="{next}">下一周</span> </div> <div class="week"> <span>日</span> <span>一</span> <span>二</span> <span>三</span> <span>四</span> <span>五</span> <span>六</span> </div> <div class="list" ondragover="{web.ondragover}" ondrop="{ondrop}" riot-style="height:{maxTop * 21 + 23}px;"> <div class="todo" each="{list}" riot-style="{style}" title="{name}" finished="{finished}"> <span class="start"></span> <span class="one-line" left="{left}" right="{right}" width="{width}" draggable="true" ondragstart="{web.ondrag}" o_id="{objectId}" o_type="todo">{name}{last}-{ori}-{width}</span> <span class="end"></span> </div> </div>', '[riot-tag=timeline] .list,timeline .list{ position: relative; background: -webkit-linear-gradient(left, #999 1px, transparent 2px, transparent 200px), -webkit-linear-gradient(top, #ccc 1px, transparent 2px, transparent 21px); background-size: 14.28% 21px; border-top: 1px solid #ccc;} [riot-tag=timeline] .todo,timeline .todo{ font-size: 13px; height: 20px; line-height: 20px; background: #129FEA; color: #fff; border-radius: 3px; padding: 0 15px; margin-top: 1px; position: absolute; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;} [riot-tag=timeline] .todo[finished=false],timeline .todo[finished=false]{ background: #cc3747;} [riot-tag=timeline] .todo .one-line,timeline .todo .one-line{ display: inline-block; max-width: 100%;} [riot-tag=timeline] .start,timeline .start, [riot-tag=timeline] .end,timeline .end{ background: greenyellow; border-radius: 10px; height: 16px; width: 16px; position: absolute; left: -9px; top: 2px; display: none;} [riot-tag=timeline] .todo:hover,timeline .todo:hover{ z-index: 1;} [riot-tag=timeline] .todo:hover .start,timeline .todo:hover .start, [riot-tag=timeline] .todo:hover .end,timeline .todo:hover .end{ display: inline-block;} [riot-tag=timeline] .end,timeline .end{ left: auto; right: -10px;}', function(opts) {
+riot.tag('timeline', '  <div class="timeline"> <span onclick="{prev}">上一周</span>时间统计表<span onclick="{next}">下一周</span> </div> <div class="week"> <span>日</span> <span>一</span> <span>二</span> <span>三</span> <span>四</span> <span>五</span> <span>六</span> </div> <div class="list" ondragover="{web.ondragover}" ondrop="{ondrop}" riot-style="height:{maxTop * 21 + 23}px;"> <div class="todo" each="{list}" riot-style="{style}" title="{name}" finished="{finished}"> <span class="start"></span> <span class="one-line" left="{left}" right="{right}" width="{width}" draggable="true" ondragstart="{web.ondrag}" o_id="{objectId}" o_type="todo">{name}{last}-{ori}-{width}</span> <span class="end"></span> </div> </div>', '[riot-tag=timeline] .list,timeline .list{ position: relative; background: -webkit-linear-gradient(left, #999 1px, transparent 2px, transparent 200px), -webkit-linear-gradient(top, #ccc 1px, transparent 2px, transparent 21px); background-size: 14.28% 21px; border-top: 1px solid #ccc;} [riot-tag=timeline] .todo,timeline .todo{ font-size: 13px; height: 20px; line-height: 20px; background: #129FEA; color: #fff; border-radius: 3px; padding: 0 15px; margin-top: 1px; position: absolute; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;} [riot-tag=timeline] .todo[finished=false],timeline .todo[finished=false]{ background: #cc3747;} [riot-tag=timeline] .todo .one-line,timeline .todo .one-line{ display: inline-block; max-width: 100%;} [riot-tag=timeline] .start,timeline .start, [riot-tag=timeline] .end,timeline .end{ background: greenyellow; border-radius: 10px; height: 16px; width: 16px; position: absolute; left: -9px; top: 2px; display: none;} [riot-tag=timeline] .todo:hover,timeline .todo:hover{ z-index: 1;} [riot-tag=timeline] .todo:hover .start,timeline .todo:hover .start, [riot-tag=timeline] .todo:hover .end,timeline .todo:hover .end{ display: inline-block;} [riot-tag=timeline] .end,timeline .end{ left: auto; right: -10px;}', function(opts) {
         var self = this;
         var len = 24 * 60 * 60 * 1000 * 7;
         var sign = web._hashs.sign || 'week';
@@ -471,7 +563,7 @@ riot.tag('today', '', function(opts) {
 
 
 });
-riot.tag('todo_list', ' <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo" weight="{prevWeight}" draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}" dragover_class="dragover" ondragleave="{web.ondragleave}" name="{name}" class="todo"> <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id="{objectId}" __checked="{finish < now && finish != 0}" if="{!removed}" prevent="true"> <span class="btn btn-warning btn-xs" o_type="todo" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span> <a if="{web._hashs.method !== \'project\' && project && project.name }" href="#method=project&project={project.objectId}" class="project">[{project.name}]</a> <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}" o_type="todo">[{pid.name}]</a> <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" class="{\'removed\':removed}">{name}</span> <span if="{children_num > 0}">[{children_finish}/{children_num}]</span> <span class="glyphicon glyphicon-trash remove" onclick="{web.remove}" o_type="todo" o_id="{objectId}"></span> <span class="glyphicon glyphicon-pencil edit" onclick="{web.edit}" o_type="todo" o_id="{objectId}"></span> </div> <div o_type="todo" weight="{minWeight-1}" method="todo" class="todo space" ondrop="{web.ondrop}" ondragover="{web.ondragover}" dragover_class="dragover" ondragleave="{web.ondragleave}"></div>', '[riot-tag=todo_list] .todo,todo_list .todo{ border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px; min-height: 26px; line-height: 26px;} [riot-tag=todo_list] .todo.space,todo_list .todo.space{ border: 0;} [riot-tag=todo_list] .todo:hover,todo_list .todo:hover{ background: #e8e8e8;} [riot-tag=todo_list] .project,todo_list .project, [riot-tag=todo_list] .pid,todo_list .pid{ background: #666; color: #fff; padding: 3px 4px; border-radius: 3px;} [riot-tag=todo_list] .pid,todo_list .pid{ background: #ADADAD;} [riot-tag=todo_list] .dragover,todo_list .dragover{ border-top: 26px #ccc solid !important;} [riot-tag=todo_list] .edit,todo_list .edit, [riot-tag=todo_list] .remove,todo_list .remove{ float: right; line-height: 26px; padding: 0 6px; color: #999; cursor: pointer; display: none;} [riot-tag=todo_list] .todo:hover .edit,todo_list .todo:hover .edit, [riot-tag=todo_list] .todo:hover .remove,todo_list .todo:hover .remove{ display: inline-block;}', function(opts) {
+riot.tag('todo_list', ' <div each="{opts.list}" o_type="todo" o_id="{objectId}" method="todo" weight="{prevWeight}" draggable="true" ondragstart="{web.ondrag}" ondrop="{web.ondrop}" ondragover="{web.ondragover}" dragover_class="dragover" ondragleave="{web.ondragleave}" name="{name}" class="todo"> <input type="checkbox" value="" onclick="{web.finish}" o_type="todo" o_id="{objectId}" __checked="{finish < now && finish != 0}" if="{!removed}" prevent="true"> <span class="btn btn-warning btn-xs" o_type="todo" o_id="{objectId}" onclick="{web.unremove}" if="{removed}">取消删除</span> <a if="{web._hashs.method !== \'project\' && project && project.name }" href="#method=project&project={project.objectId}" class="project">[{project.name}]</a> <a if="{pid&& pid.name}" href="javascript:void(0)" class="pid" onclick="{web.edit}" o_id="{pid.objectId}" o_type="todo">[{pid.name}]</a> <span onclick="{web.edit}" o_type="todo" o_id="{objectId}" class="{\'removed\':removed}">{name}</span> <span if="{children_num > 0}">[{children_finish}/{children_num}]</span> <span class="handle-btn"> <span class="glyphicon glyphicon-pencil edit" onclick="{web.edit}" o_type="todo" o_id="{objectId}"></span> <span class="glyphicon glyphicon-trash remove" onclick="{web.remove}" o_type="todo" o_id="{objectId}"></span> </span> </div> <div o_type="todo" weight="{minWeight-1}" method="todo" class="todo space" ondrop="{web.ondrop}" ondragover="{web.ondragover}" dragover_class="dragover" ondragleave="{web.ondragleave}"></div>', '[riot-tag=todo_list] .todo,todo_list .todo{ border-bottom: 1px solid #ccc; border-left: 5px solid #ccc; padding-left: 5px; margin-top: 5px; min-height: 26px; line-height: 26px; overflow: hidden;} [riot-tag=todo_list] .todo.space,todo_list .todo.space{ border: 0;} [riot-tag=todo_list] .todo:hover,todo_list .todo:hover{ background: #e8e8e8;} [riot-tag=todo_list] .project,todo_list .project, [riot-tag=todo_list] .pid,todo_list .pid{ background: #666; color: #fff; padding: 3px 4px; border-radius: 3px;} [riot-tag=todo_list] .pid,todo_list .pid{ background: #ADADAD;} [riot-tag=todo_list] .dragover,todo_list .dragover{ border-top: 26px #ccc solid !important;} [riot-tag=todo_list] .handle-btn,todo_list .handle-btn{ float: right; display: inline-block; white-space: nowrap;} [riot-tag=todo_list] .edit,todo_list .edit, [riot-tag=todo_list] .remove,todo_list .remove{ line-height: 26px; padding: 0 6px; color: #999; cursor: pointer; display: none;} [riot-tag=todo_list] .todo:hover .edit,todo_list .todo:hover .edit, [riot-tag=todo_list] .todo:hover .remove,todo_list .todo:hover .remove{ display: inline-block;}', function(opts) {
         var self = this;
         self.now = Date.now();
         self.minWeight = 9999999999999, self.maxWeight = 0;

@@ -14,6 +14,7 @@
             margin-top: 5px;
             min-height: 26px;
             line-height: 26px;
+            overflow: hidden;
         }
 
         .todo.space {
@@ -39,8 +40,14 @@
             border-top: 26px #ccc solid !important;
         }
 
+        .handle-btn {
+            float: right;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
         .edit, .remove {
-            float: right; line-height: 26px; padding: 0 6px; color: #999; cursor: pointer; display: none;
+            line-height: 26px; padding: 0 6px; color: #999; cursor: pointer; display: none;
         }
 
         .todo:hover .edit, .todo:hover .remove {
@@ -63,8 +70,11 @@
         <span onclick="{web.edit}" o_type="todo" o_id="{objectId}"
               class="{'removed':removed}">{name}</span>
         <span if="{children_num > 0}">[{children_finish}/{children_num}]</span>
-        <span class="glyphicon glyphicon-trash remove" onclick="{web.remove}" o_type="todo" o_id="{objectId}"></span>
-        <span class="glyphicon glyphicon-pencil edit" onclick="{web.edit}" o_type="todo" o_id="{objectId}"></span>
+        <span class="handle-btn">
+            <span class="glyphicon glyphicon-pencil edit" onclick="{web.edit}" o_type="todo" o_id="{objectId}"></span>
+            <span class="glyphicon glyphicon-trash remove" onclick="{web.remove}" o_type="todo"
+                  o_id="{objectId}"></span>
+        </span>
     </div>
     <div o_type="todo" weight="{minWeight-1}" method="todo" class="todo space"
          ondrop="{web.ondrop}" ondragover="{web.ondragover}"
