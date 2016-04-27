@@ -17,7 +17,7 @@ web.ondragover = function (e) {
         }
     }
     e.preventDefault();
-    if (web._drag == e.target) {
+    if (web._drag == e.target || $(web._drag).attr('o_id') == $(e.target).attr('o_id')) {
         return true;
     }
     _dragover = $(e.target).addClass('dragover');

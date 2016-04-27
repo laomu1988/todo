@@ -3,13 +3,34 @@
     <style>
         .container {
             display: flex;
+            font-size: 13px;
         }
 
         .col {
             flex: 1;
             -webkit-flex: 1;
+            width: 14.2%;
+            border: 1px solid #ccc;
+            margin-top: -1px;
+            margin-left: -1px;
         }
 
+        .todo .handle-btn {
+            display: none !important;
+        }
+
+        .todo {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0;
+            margin: 0;
+            border-left: 0;
+        }
+
+        .todo input[type=checkbox] {
+            margin-right: -3px;
+        }
     </style>
     <!--按照统计时间显示任务-->
     <div class="timeline">
